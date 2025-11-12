@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 
@@ -6,17 +6,20 @@ function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" color="primary" elevation={2}>
+  <AppBar position="static" sx={{ backgroundColor: '#222222' }} elevation={2}>
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }}
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, cursor: 'pointer' }}
             onClick={() => navigate('/')}
           >
-            DermaAI
-          </Typography>
+            <Box
+              component="img"
+              src="/dermaai.gif"
+              alt="DermaAI logo"
+              sx={{ width: 140, height: 'auto', mx: 0 }}
+            />
+          </Box>
 
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <SignedOut>
