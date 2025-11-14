@@ -1,35 +1,87 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ClerkProvider, SignIn, SignUp } from '@clerk/clerk-react';
+import Dashboard from './pages/Dashboard';
+import About from './pages/About';
+import Home from './pages/Home';
+import Analysis from './pages/Analysis';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Import your Clerk publishable key from environment variables
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
+
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: '"Lato", sans-serif',
+    allVariants: {
+      fontFamily: '"Lato", sans-serif',
+    },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
+      `,
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/sign-in/*"
+              element={
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                  <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
+                </div>
+              }
+            />
+            <Route
+              path="/sign-up/*"
+              element={
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                  <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
+                </div>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analysis"
+              element={
+                <ProtectedRoute>
+                  <Analysis />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </ClerkProvider>
+  );
 }
 
-export default App
+export default App;
