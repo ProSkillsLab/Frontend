@@ -1,28 +1,33 @@
-import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { SignIn, RocketLaunch, SquaresFour } from 'phosphor-react';
 
 function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" color="primary" elevation={2}>
+  <AppBar position="static" sx={{ backgroundColor: '#222222' }} elevation={2}>
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer' }}
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, cursor: 'pointer' }}
             onClick={() => navigate('/')}
           >
-            DermaAI
-          </Typography>
+            <Box
+              component="img"
+              src="/dermaai.png"
+              alt="DermaAI logo"
+              sx={{ width: 140, height: 'auto', mx: 0 }}
+            />
+          </Box>
 
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <SignedOut>
               <Button
                 color="inherit"
                 variant="outlined"
+                startIcon={<SignIn size={20} weight="bold" />}
                 sx={{ borderColor: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
                 onClick={() => navigate('/sign-in')}
               >
@@ -31,6 +36,7 @@ function Navbar() {
               <Button
                 color="inherit"
                 variant="contained"
+                startIcon={<RocketLaunch size={20} weight="bold" />}
                 sx={{ bgcolor: 'white', color: 'primary.main', '&:hover': { bgcolor: 'grey.100' } }}
                 onClick={() => navigate('/sign-up')}
               >
@@ -40,11 +46,11 @@ function Navbar() {
             <SignedIn>
               <Button
                 color="inherit"
+                startIcon={<SquaresFour size={20} weight="bold" />}
                 onClick={() => navigate('/dashboard')}
               >
                 Dashboard
               </Button>
-              <UserButton afterSignOutUrl="/" />
             </SignedIn>
           </Box>
         </Toolbar>
