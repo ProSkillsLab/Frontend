@@ -22,16 +22,16 @@ import {
   Alert,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Assessment as AssessmentIcon,
+  List as MenuIcon,
+  SquaresFour as DashboardIcon,
+  Users as PeopleIcon,
+  ChartLine as AssessmentIcon,
   Info as InfoIcon,
-  CloudUpload as CloudUploadIcon,
+  CloudArrowUp as CloudUploadIcon,
   Image as ImageIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-} from '@mui/icons-material';
+} from 'phosphor-react';
 import { Link as RouterLink } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -56,10 +56,10 @@ function Analysis() {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, route: '/dashboard' },
-    { text: 'Patients', icon: <PeopleIcon /> },
-    { text: 'Analysis', icon: <AssessmentIcon />, route: '/analysis' },
-    { text: 'About', icon: <InfoIcon />, route: '/about' },
+    { text: 'Dashboard', icon: <DashboardIcon size={24} />, route: '/dashboard' },
+    { text: 'Patients', icon: <PeopleIcon size={24} /> },
+    { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
+    { text: 'About', icon: <InfoIcon size={24} />, route: '/about' },
   ];
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,7 +154,7 @@ function Analysis() {
             onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
-            <MenuIcon />
+            <MenuIcon size={24} />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             AI Analysis
@@ -252,7 +252,7 @@ function Analysis() {
                     <Button
                       variant="contained"
                       component="label"
-                      startIcon={<CloudUploadIcon />}
+                      startIcon={<CloudUploadIcon size={20} />}
                       size="large"
                     >
                       Choose Image
@@ -310,7 +310,7 @@ function Analysis() {
                       color: 'text.secondary',
                     }}
                   >
-                    <ImageIcon sx={{ fontSize: 80, mb: 2, opacity: 0.3 }} />
+                    <ImageIcon size={80} style={{ marginBottom: 16, opacity: 0.3 }} />
                     <Typography variant="body1">
                       Upload an image to see analysis results
                     </Typography>
@@ -353,9 +353,9 @@ function Analysis() {
                             <ListItem key={index} sx={{ pl: 0 }}>
                               <ListItemIcon sx={{ minWidth: 32 }}>
                                 {analysisResult.severity === 'High' ? (
-                                  <WarningIcon color="error" fontSize="small" />
+                                  <WarningIcon size={20} color="#d32f2f" />
                                 ) : (
-                                  <CheckCircleIcon color="success" fontSize="small" />
+                                  <CheckCircleIcon size={20} color="#2e7d32" />
                                 )}
                               </ListItemIcon>
                               <ListItemText primary={rec} />

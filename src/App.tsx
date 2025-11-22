@@ -22,16 +22,9 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Lato", sans-serif',
+    fontFamily: '"DM Sans", sans-serif',
     allVariants: {
-      fontFamily: '"Lato", sans-serif',
-    },
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: `
-        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
-      `,
+      fontFamily: '"DM Sans", sans-serif',
     },
   },
 });
@@ -48,7 +41,13 @@ function App() {
               path="/sign-in/*"
               element={
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                  <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
+                  <SignIn 
+                    routing="path" 
+                    path="/sign-in" 
+                    signUpUrl="/sign-up"
+                    forceRedirectUrl="/dashboard"
+                    fallbackRedirectUrl="/dashboard"
+                  />
                 </div>
               }
             />
@@ -56,7 +55,13 @@ function App() {
               path="/sign-up/*"
               element={
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                  <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
+                  <SignUp 
+                    routing="path" 
+                    path="/sign-up" 
+                    signInUrl="/sign-in"
+                    forceRedirectUrl="/dashboard"
+                    fallbackRedirectUrl="/dashboard"
+                  />
                 </div>
               }
             />
