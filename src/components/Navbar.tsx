@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, Button, Box, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { SignIn, RocketLaunch, SquaresFour } from 'phosphor-react';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function Navbar() {
           >
             <Box
               component="img"
-              src="/dermaai.gif"
+              src="/dermaai.png"
               alt="DermaAI logo"
               sx={{ width: 140, height: 'auto', mx: 0 }}
             />
@@ -26,6 +27,7 @@ function Navbar() {
               <Button
                 color="inherit"
                 variant="outlined"
+                startIcon={<SignIn size={20} weight="bold" />}
                 sx={{ borderColor: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
                 onClick={() => navigate('/sign-in')}
               >
@@ -34,6 +36,7 @@ function Navbar() {
               <Button
                 color="inherit"
                 variant="contained"
+                startIcon={<RocketLaunch size={20} weight="bold" />}
                 sx={{ bgcolor: 'white', color: 'primary.main', '&:hover': { bgcolor: 'grey.100' } }}
                 onClick={() => navigate('/sign-up')}
               >
@@ -43,11 +46,11 @@ function Navbar() {
             <SignedIn>
               <Button
                 color="inherit"
+                startIcon={<SquaresFour size={20} weight="bold" />}
                 onClick={() => navigate('/dashboard')}
               >
                 Dashboard
               </Button>
-              <UserButton afterSignOutUrl="/" />
             </SignedIn>
           </Box>
         </Toolbar>

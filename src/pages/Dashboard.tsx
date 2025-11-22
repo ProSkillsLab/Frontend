@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -16,30 +16,50 @@ import {
   Card,
   CardContent,
   Paper,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Assessment as AssessmentIcon,
+  List as MenuIcon,
+  SquaresFour as DashboardIcon,
+  Users as PeopleIcon,
+  ChartLine as AssessmentIcon,
   Info as InfoIcon,
-} from '@mui/icons-material';
+} from 'phosphor-react';
 import { Link as RouterLink } from 'react-router-dom';
+import { UserButton, useUser } from '@clerk/clerk-react';
 
 const drawerWidth = 240;
 
 function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true); // Changed to true by default
+  const { user, isLoaded } = useUser();
+
+  useEffect(() => {
+    // Simple timer to hide the welcome message after 6 seconds
+    if (isLoaded && user && showWelcome) {
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+      }, 6000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, user, showWelcome]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleCloseWelcome = () => {
+    setShowWelcome(false);
+  };
+
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, route: '/dashboard' },
-    { text: 'Patients', icon: <PeopleIcon /> },
-    { text: 'Analysis', icon: <AssessmentIcon />, route: '/analysis' },
-    { text: 'About', icon: <InfoIcon />, route: '/about' },
+    { text: 'Dashboard', icon: <DashboardIcon size={24} />, route: '/dashboard' },
+    { text: 'Patients', icon: <PeopleIcon size={24} /> },
+    { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
+    { text: 'About', icon: <InfoIcon size={24} />, route: '/about' },
   ];
 
   const drawer = (
@@ -85,11 +105,12 @@ function Dashboard() {
             onClick={handleDrawerToggle}
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
-            <MenuIcon />
+            <MenuIcon size={24} />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
+          <UserButton afterSignOutUrl="/" />
         </Toolbar>
       </AppBar>
 
@@ -183,6 +204,23 @@ function Dashboard() {
           </Grid>
         </Container>
       </Box>
+
+      <Snackbar 
+        open={showWelcome} 
+        autoHideDuration={6000} 
+        onClose={handleCloseWelcome}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{ zIndex: 9999, mt: 8 }}
+      >
+        <Alert 
+          onClose={handleCloseWelcome} 
+          severity="success" 
+          sx={{ width: '100%', fontSize: '1.1rem' }}
+          variant="filled"
+        >
+          Welcome {user?.fullName || user?.firstName || user?.username || 'User'} to DermaAI!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
