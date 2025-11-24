@@ -5,18 +5,26 @@ function CTASection() {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ bgcolor: 'grey.100', py: 8, mt: 8 }}>
+    <Box sx={{ bgcolor: 'white', py: 12 }}>
       <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-        <Typography variant="h4" component="h2" gutterBottom fontWeight="bold">
+        <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
           A Smarter Path to Skin Health
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, lineHeight: 1.8, fontSize: '1.1rem' }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 6, lineHeight: 1.8, fontSize: '1.1rem' }}>
           Our mission is to make early skin cancer detection easier, faster, and more accessible through responsible and innovative use of AI technology. While our system does not replace professional medical diagnosis, it offers a powerful tool to support awareness and prompt action.
         </Typography>
         <Button
           variant="contained"
           size="large"
           onClick={() => navigate('/sign-up')}
+          sx={{ 
+            px: 6, 
+            py: 1.5, 
+            borderRadius: 2,
+            fontSize: '1.1rem',
+            textTransform: 'none',
+            fontWeight: 600
+          }}
         >
           Get Started Today
         </Button>

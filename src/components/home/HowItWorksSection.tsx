@@ -1,22 +1,25 @@
-import { Container, Typography, Box, Grid, Paper } from '@mui/material';
-import { UploadSimple, Brain, ChartBar } from 'phosphor-react';
+import { Container, Typography, Box, Grid, Paper, Chip } from '@mui/material';
+import { UploadSimple, Brain, ChartBar, Lightbulb } from 'phosphor-react';
 
 function HowItWorksSection() {
   const steps = [
     {
-      icon: <UploadSimple size={48} weight="duotone" />,
+      icon: <UploadSimple size={40} weight="duotone" color="#1976d2" />,
+      bg: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)',
       title: 'Upload Image',
       description: 'Upload a clear dermoscopic image of the skin lesion you want to analyze',
       step: '01'
     },
     {
-      icon: <Brain size={48} weight="duotone" />,
+      icon: <Brain size={40} weight="duotone" color="#9C27B0" />,
+      bg: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
       title: 'AI Analysis',
       description: 'Our advanced CNN model analyzes the image across nine recognized skin cancer types',
       step: '02'
     },
     {
-      icon: <ChartBar size={48} weight="duotone" />,
+      icon: <ChartBar size={40} weight="duotone" color="#ED6C02" />,
+      bg: 'linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%)',
       title: 'Get Results',
       description: 'Receive up to three possible classifications with confidence scores for each diagnosis',
       step: '03'
@@ -24,33 +27,37 @@ function HowItWorksSection() {
   ];
 
   return (
-    <Box sx={{ bgcolor: '#f9fafb', py: 10 }}>
+    <Box sx={{ bgcolor: 'white', py: 12 }}>
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
+        <Box sx={{ textAlign: 'left', mb: 8 }}>
+          <Chip 
+            label="Simple Process" 
+            size="small"
+            sx={{ 
+              mb: 2, 
+              bgcolor: 'primary.main', 
+              color: 'white', 
+              fontWeight: 600,
+              fontSize: '0.75rem'
+            }} 
+          />
           <Typography 
-            variant="h2" 
+            variant="h3" 
             component="h2" 
-            gutterBottom 
-            sx={{
-              fontWeight: 800,
-              fontSize: { xs: '2.25rem', sm: '2.75rem', md: '3.25rem' },
-              mb: 3,
-              color: '#1a1a1a',
-              letterSpacing: '-0.01em'
+            sx={{ 
+              fontWeight: 800, 
+              mb: 2,
+              letterSpacing: '-0.02em'
             }}
           >
             How It Works
           </Typography>
           <Typography 
-            component="p" 
+            variant="body1" 
+            color="text.secondary" 
             sx={{ 
-              maxWidth: '850px', 
-              mx: 'auto', 
-              lineHeight: 1.8,
-              fontSize: { xs: '1.05rem', sm: '1.15rem', md: '1.2rem' },
-              color: 'text.secondary',
-              fontWeight: 400,
-              px: { xs: 2, sm: 0 }
+              fontSize: '1.1rem',
+              maxWidth: '850px'
             }}
           >
             Our AI-powered platform makes skin cancer detection simple and accessible. Just follow these three easy steps to get your analysis.
@@ -65,30 +72,37 @@ function HowItWorksSection() {
                 sx={{
                   p: 4,
                   height: '100%',
-                  textAlign: 'center',
+                  textAlign: 'left',
                   position: 'relative',
                   bgcolor: 'white',
-                  borderRadius: 3,
+                  borderRadius: 4,
                   border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.3s ease',
+                  borderColor: 'rgba(0,0,0,0.06)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.02)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  overflow: 'hidden',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
                     borderColor: 'primary.main',
+                    '& .step-icon': {
+                      transform: 'scale(1.1)'
+                    }
                   }
                 }}
               >
-                {/* Step number */}
+                {/* Step number background */}
                 <Typography
                   sx={{
                     position: 'absolute',
-                    top: 20,
-                    right: 20,
-                    fontSize: '3rem',
-                    fontWeight: 800,
-                    color: 'rgba(25, 118, 210, 0.1)',
-                    lineHeight: 1
+                    top: -20,
+                    right: -20,
+                    fontSize: '8rem',
+                    fontWeight: 900,
+                    color: 'rgba(0,0,0,0.02)',
+                    lineHeight: 1,
+                    pointerEvents: 'none',
+                    userSelect: 'none'
                   }}
                 >
                   {step.step}
@@ -96,21 +110,18 @@ function HowItWorksSection() {
 
                 {/* Icon */}
                 <Box
+                  className="step-icon"
                   sx={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: 80,
                     height: 80,
-                    borderRadius: '50%',
-                    bgcolor: 'rgba(25, 118, 210, 0.1)',
-                    color: 'primary.main',
+                    borderRadius: 3,
+                    background: step.bg,
                     mb: 3,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'white',
-                    }
+                    transition: 'transform 0.3s ease',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.04)'
                   }}
                 >
                   {step.icon}
@@ -123,8 +134,7 @@ function HowItWorksSection() {
                   gutterBottom 
                   sx={{ 
                     fontWeight: 700,
-                    mb: 2,
-                    color: '#1a1a1a'
+                    mb: 2
                   }}
                 >
                   {step.title}
@@ -133,10 +143,11 @@ function HowItWorksSection() {
                 {/* Description */}
                 <Typography 
                   variant="body1" 
+                  color="text.secondary"
                   sx={{ 
-                    color: 'text.secondary',
-                    lineHeight: 1.7,
-                    fontSize: '1rem'
+                    lineHeight: 1.6,
+                    position: 'relative',
+                    zIndex: 1
                   }}
                 >
                   {step.description}
@@ -146,28 +157,25 @@ function HowItWorksSection() {
           ))}
         </Grid>
 
-        {/* Bottom info box */}
-        <Box
-          sx={{
-            mt: 8,
-            p: 4,
-            bgcolor: 'rgba(25, 118, 210, 0.05)',
-            borderRadius: 3,
-            textAlign: 'center',
-            border: '1px solid',
-            borderColor: 'divider',
+        {/* Info Note */}
+        <Box 
+          sx={{ 
+            mt: 8, 
+            p: 3, 
+            bgcolor: '#F8F9FA', 
+            borderRadius: 3, 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            gap: 2,
+            maxWidth: '800px',
+            mx: 'auto',
+            border: '1px dashed',
+            borderColor: 'divider'
           }}
         >
-          <Typography
-            variant="body1"
-            sx={{
-              color: 'text.secondary',
-              fontSize: '1.05rem',
-              lineHeight: 1.8,
-              fontWeight: 500
-            }}
-          >
-            💡 Our system analyzes images across <strong>nine recognized skin cancer types</strong> and provides up to <strong>three possible classifications</strong> with confidence scores to help you make informed decisions about seeking medical care.
+          <Lightbulb size={24} weight="fill" color="#F59E0B" style={{ flexShrink: 0, marginTop: 2 }} />
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+            <Box component="span" fontWeight="bold" color="text.primary">Did you know?</Box> Our system analyzes images across nine recognized skin cancer types and provides up to three possible classifications with confidence scores to help you make informed decisions about seeking medical care.
           </Typography>
         </Box>
       </Container>

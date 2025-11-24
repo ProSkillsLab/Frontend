@@ -61,7 +61,7 @@ function HeroSection() {
                 letterSpacing: '-0.02em'
               }}
             >
-              Early Skin Cancer Detection, Powered by AI
+              Discover Your Skin Health with AI
             </Typography>
             <Typography 
               component="p" 
@@ -71,12 +71,12 @@ function HeroSection() {
                 lineHeight: 1.7, 
                 textAlign: 'left',
                 fontWeight: 400,
-                fontSize: { xs: '1.05rem', sm: '1.15rem', md: '1.25rem' },
+                fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
                 color: 'rgba(255, 255, 255, 0.9)',
                 maxWidth: '90%'
               }}
             >
-              Our platform provides fast, accessible, and non-invasive skin cancer analysis using advanced deep learning technology. By combining dermatology expertise with cutting-edge Convolutional Neural Networks (CNN), we help users identify potential skin conditions with confidence.
+              Fast, Accurate and Early Detection You Can Trust.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2.5, flexWrap: 'wrap', mt: 4 }}>
               <Button
@@ -84,19 +84,19 @@ function HeroSection() {
                 size="large"
                 startIcon={<RocketLaunch size={24} weight="bold" />}
                 sx={{ 
-                  bgcolor: 'white', 
-                  color: '#222222', 
+                  bgcolor: 'primary.main', 
+                  color: 'white', 
                   px: 5,
                   py: 1.75,
                   fontSize: { xs: '1rem', sm: '1.1rem' },
                   fontWeight: 700,
                   borderRadius: 2.5,
                   textTransform: 'none',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                  boxShadow: '0 4px 14px rgba(25, 118, 210, 0.3)',
                   '&:hover': { 
-                    bgcolor: '#f5f5f5',
+                    bgcolor: 'primary.dark',
                     transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                    boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
                   },
                   transition: 'all 0.3s ease'
                 }}
@@ -109,8 +109,8 @@ function HeroSection() {
                 size="large"
                 startIcon={<SignIn size={24} weight="bold" />}
                 sx={{ 
-                  borderColor: 'white', 
-                  color: 'white',
+                  borderColor: 'primary.main', 
+                  color: 'primary.main',
                   px: 5,
                   py: 1.75,
                   fontSize: { xs: '1rem', sm: '1.1rem' },
@@ -119,9 +119,9 @@ function HeroSection() {
                   borderWidth: 2,
                   textTransform: 'none',
                   '&:hover': { 
-                    borderColor: 'white',
+                    borderColor: 'primary.dark',
                     borderWidth: 2,
-                    bgcolor: 'rgba(255,255,255,0.1)',
+                    bgcolor: 'rgba(25, 118, 210, 0.04)',
                     transform: 'translateY(-2px)',
                   },
                   transition: 'all 0.3s ease'
