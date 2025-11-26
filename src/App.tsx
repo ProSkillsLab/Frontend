@@ -5,6 +5,7 @@ import { ClerkProvider, SignIn, SignUp } from '@clerk/clerk-react';
 import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import Home from './pages/Home';
+import Explore from './pages/Explore';
 import Analysis from './pages/Analysis';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -37,6 +38,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/explore" element={<Explore />} />
             <Route
               path="/sign-in/*"
               element={
