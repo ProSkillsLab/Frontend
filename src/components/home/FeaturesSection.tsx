@@ -1,4 +1,4 @@
-import { Container, Typography, Grid, Paper, Box } from '@mui/material';
+import { Container, Typography, Grid, Paper, Box, Chip } from '@mui/material';
 import { Lightning, FirstAid, GlobeHemisphereWest, ShieldCheck } from 'phosphor-react';
 
 function FeaturesSection() {
@@ -26,32 +26,78 @@ function FeaturesSection() {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Typography variant="h3" component="h2" textAlign="center" gutterBottom fontWeight="bold">
-        Why Choose Our System?
-      </Typography>
-      <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 6 }}>
-        Empowering early detection with cutting-edge AI technology
-      </Typography>
-      
-      <Grid container spacing={4}>
-        {features.map((feature, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Paper elevation={3} sx={{ p: 4, height: '100%', textAlign: 'center' }}>
-              <Box sx={{ mb: 2 }}>
-                {feature.icon}
-              </Box>
-              <Typography variant="h5" component="h3" gutterBottom fontWeight="bold">
-                {feature.title}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {feature.description}
-              </Typography>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: 'left', mb: 8 }}>
+          <Chip 
+            label="Key Features" 
+            size="small"
+            sx={{ 
+              mb: 2, 
+              bgcolor: 'primary.main', 
+              color: 'white', 
+              fontWeight: 600,
+              fontSize: '0.75rem'
+            }} 
+          />
+          <Typography 
+            variant="h3" 
+            component="h2" 
+            sx={{ 
+              fontWeight: 800, 
+              mb: 2,
+              letterSpacing: '-0.02em'
+            }}
+          >
+            Why Choose Our System?
+          </Typography>
+          <Typography 
+            variant="body1" 
+            color="text.secondary" 
+            sx={{ 
+              fontSize: '1.1rem',
+              maxWidth: '850px'
+            }}
+          >
+            Empowering early detection with cutting-edge AI technology designed for accuracy and ease of use.
+          </Typography>
+        </Box>
+        
+        <Grid container spacing={4}>
+          {features.map((feature, index) => (
+            <Grid item xs={12} md={6} key={index}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 4, 
+                  height: '100%', 
+                  textAlign: 'left',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 4,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+                    borderColor: 'transparent'
+                  }
+                }}
+              >
+                <Box sx={{ mb: 3, color: 'primary.main' }}>
+                  {feature.icon}
+                </Box>
+                <Typography variant="h5" component="h3" gutterBottom fontWeight="bold">
+                  {feature.title}
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  {feature.description}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </Box>
   );
 }
 

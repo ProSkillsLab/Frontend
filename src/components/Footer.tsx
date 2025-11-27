@@ -7,10 +7,12 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        bgcolor: '#222222',
-        color: 'white',
+        bgcolor: 'white',
+        color: 'text.primary',
         py: 6,
         mt: 'auto',
+        borderTop: '1px solid',
+        borderColor: 'divider'
       }}
     >
       <Container maxWidth="lg">
@@ -23,35 +25,35 @@ function Footer() {
               alt="DermaAI logo"
               sx={{ width: 100, height: 'auto', mb: 2 }}
             />
-            <Typography variant="body2" sx={{ mb: 2, opacity: 0.9 }}>
+            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
               Advanced AI-powered dermatological analysis and patient management system. 
               Empowering healthcare professionals with cutting-edge technology.
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <IconButton
                 size="small"
-                sx={{ color: 'white', '&:hover': { color: 'primary.light' } }}
+                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                 aria-label="Facebook"
               >
                 <FacebookLogo size={24} weight="fill" />
               </IconButton>
               <IconButton
                 size="small"
-                sx={{ color: 'white', '&:hover': { color: 'primary.light' } }}
+                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                 aria-label="Twitter"
               >
                 <TwitterLogo size={24} weight="fill" />
               </IconButton>
               <IconButton
                 size="small"
-                sx={{ color: 'white', '&:hover': { color: 'primary.light' } }}
+                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                 aria-label="LinkedIn"
               >
                 <LinkedinLogo size={24} weight="fill" />
               </IconButton>
               <IconButton
                 size="small"
-                sx={{ color: 'white', '&:hover': { color: 'primary.light' } }}
+                sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}
                 aria-label="Instagram"
               >
                 <InstagramLogo size={24} weight="fill" />
@@ -68,36 +70,36 @@ function Footer() {
               <Link
                 component={RouterLink}
                 to="/"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Home
               </Link>
               <Link
                 component={RouterLink}
                 to="/about"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 About Us
               </Link>
               <Link
                 component={RouterLink}
                 to="/dashboard"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Dashboard
               </Link>
               <Link
                 component={RouterLink}
                 to="/analysis"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Analysis
               </Link>
@@ -112,41 +114,41 @@ function Footer() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Link
                 href="#"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Documentation
               </Link>
               <Link
                 href="#"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 API Reference
               </Link>
               <Link
                 href="#"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Support
               </Link>
               <Link
                 href="#"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Privacy Policy
               </Link>
               <Link
                 href="#"
-                color="inherit"
+                color="text.secondary"
                 underline="hover"
-                sx={{ opacity: 0.9, '&:hover': { opacity: 1 } }}
+                sx={{ '&:hover': { color: 'primary.main' } }}
               >
                 Terms of Service
               </Link>
@@ -159,21 +161,21 @@ function Footer() {
               Contact Us
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                 <Envelope size={20} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2">
                   support@dermaai.com
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                 <Phone size={20} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2">
                   +1 (555) 123-4567
                 </Typography>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, color: 'text.secondary' }}>
                 <MapPin size={20} />
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2">
                   123 Medical Plaza, Suite 456<br />
                   San Francisco, CA 94102
                 </Typography>
@@ -182,10 +184,10 @@ function Footer() {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+        <Divider sx={{ my: 3 }} />
 
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body2" sx={{ opacity: 0.8 }}>
+          <Typography variant="body2" color="text.secondary">
             © {new Date().getFullYear()} DermaAI. All rights reserved. | Revolutionizing dermatological care with AI.
           </Typography>
         </Box>
