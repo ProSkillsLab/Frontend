@@ -35,6 +35,7 @@ function App() {
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <div style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -86,6 +87,7 @@ function App() {
             <Route path="/about" element={<About />} />
           </Routes>
         </Router>
+        </div>
       </ThemeProvider>
     </ClerkProvider>
   );
