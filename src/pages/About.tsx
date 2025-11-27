@@ -48,7 +48,7 @@ const SectionHeader = ({ icon, bg, title, subtitle }: { icon: React.ReactNode; b
   </Box>
 );
 
-const CardGrid = <T extends { index?: number }>({ items, render, md = 4 }: { items: T[]; render: (item: T & { index: number }) => React.ReactNode; md?: number }) => (
+const CardGrid = <T extends object>({ items, render, md = 4 }: { items: T[]; render: (item: T & { index: number }) => React.ReactNode; md?: number }) => (
   <Grid container spacing={3} justifyContent="center">
     {items.map((item, index) => <Grid item xs={12} sm={6} md={md} key={index}>{render({ ...item, index })}</Grid>)}
   </Grid>
