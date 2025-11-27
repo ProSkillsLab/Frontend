@@ -1,396 +1,181 @@
 import { useState } from 'react';
-import {
-  Box,
-  Container,
-  AppBar,
-  Toolbar,
-  Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
-  Grid,
-  Card,
-  CardContent,
-  Paper,
-  Button,
-  LinearProgress,
-  Chip,
-  Alert,
-} from '@mui/material';
-import {
-  List as MenuIcon,
-  SquaresFour as DashboardIcon,
-  Users as PeopleIcon,
-  ChartLine as AssessmentIcon,
-  Info as InfoIcon,
-  CloudArrowUp as CloudUploadIcon,
-  Image as ImageIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-} from 'phosphor-react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Box, Container, AppBar, Toolbar, Typography, IconButton, Grid, Paper, Button, LinearProgress, Chip, Alert } from '@mui/material';
+import { List as MenuIcon, CloudArrowUp, Image as ImageIcon, MagnifyingGlass, CheckCircle, Warning } from 'phosphor-react';
+import { UserButton } from '@clerk/clerk-react';
+import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 
-const drawerWidth = 240;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
 
-interface AnalysisResult {
-  id: string;
-  condition: string;
+interface Result {
+  filename: string;
+  lesion_code: string;
+  lesion_name: string;
+  binary_prediction: string;
   confidence: number;
-  severity: 'Low' | 'Medium' | 'High';
-  recommendations: string[];
-  timestamp: Date;
 }
 
-function Analysis() {
+export default function Analysis() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<Result | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon size={24} />, route: '/dashboard' },
-    { text: 'Patients', icon: <PeopleIcon size={24} /> },
-    { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
-    { text: 'About', icon: <InfoIcon size={24} />, route: '/about' },
-  ];
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
+  const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      setFile(f);
+      setResult(null);
+      setError(null);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-        setAnalysisResult(null);
-      };
-      reader.readAsDataURL(file);
+      reader.onloadend = () => setImage(reader.result as string);
+      reader.readAsDataURL(f);
     }
   };
 
-  const handleAnalyze = () => {
-    if (!selectedImage) return;
-
-    setIsAnalyzing(true);
-    
-    // Simulate AI analysis (replace with actual API call)
-    setTimeout(() => {
-      setAnalysisResult({
-        id: Math.random().toString(36).substr(2, 9),
-        condition: 'Dermatitis',
-        confidence: 87.5,
-        severity: 'Medium',
-        recommendations: [
-          'Apply topical corticosteroid cream twice daily',
-          'Avoid harsh soaps and detergents',
-          'Keep the affected area moisturized',
-          'Follow up in 2 weeks if no improvement',
-        ],
-        timestamp: new Date(),
+  const analyze = async () => {
+    if (!file) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${API_URL}/predict`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error(`Analysis failed: ${res.statusText}`);
+      const data = await res.json();
+      setResult({
+        filename: data.filename || file.name,
+        lesion_code: data.lesion_code || 'Unknown',
+        lesion_name: data.lesion_name || 'Unknown',
+        binary_prediction: data.binary_prediction || 'Unknown',
+        confidence: data.confidence ? parseFloat((data.confidence * 100).toFixed(1)) : 0,
       });
-      setIsAnalyzing(false);
-    }, 2500);
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'Low':
-        return 'success';
-      case 'Medium':
-        return 'warning';
-      case 'High':
-        return 'error';
-      default:
-        return 'default';
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to analyze image');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const drawer = (
-    <Box>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          DermaAI
-        </Typography>
-      </Toolbar>
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            {item.route ? (
-              <ListItemButton component={RouterLink} to={item.route}>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            ) : (
-              <ListItemButton>
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            )}
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+  const isBenign = result?.binary_prediction.toLowerCase() === 'benign';
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f7fa' }}>
+      <LeftNavbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+
+      <AppBar position="fixed" elevation={0} sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}>
         <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon size={24} />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            AI Analysis
-          </Typography>
+          <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2, display: { sm: 'none' }, color: '#333' }}><MenuIcon size={24} /></IconButton>
+          <Typography variant="h6" sx={{ ...s.font, fontWeight: 700, color: '#1a1a2e', flexGrow: 1 }}>Skin Analysis</Typography>
+          <UserButton afterSignOutUrl="/" />
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        <Toolbar />
+      <Box component="main" sx={{ flexGrow: 1, pt: 10, pb: 4, px: { xs: 2, sm: 4 } }}>
         <Container maxWidth="lg">
-          <Grid container spacing={3}>
-            {/* Upload Section */}
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, height: '100%' }}>
-                <Typography variant="h6" gutterBottom>
-                  Upload Image
-                </Typography>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography variant="h4" sx={{ ...s.font, fontWeight: 800, color: '#1a1a2e', mb: 1 }}>
+              AI-Powered Skin Analysis
+            </Typography>
+            <Typography sx={{ ...s.font, color: '#666', maxWidth: 500, mx: 'auto' }}>
+              Upload a clear image of your skin condition for instant AI diagnosis
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3} justifyContent="center">
+            {/* Upload Card */}
+            <Grid item xs={12} md={5}>
+              <Paper sx={{ p: 3, borderRadius: 4, bgcolor: 'white', height: '100%', boxShadow: '0 2px 20px rgba(0,0,0,0.06)' }}>
                 <Box
+                  component="label"
                   sx={{
-                    border: '2px dashed',
-                    borderColor: 'primary.main',
-                    borderRadius: 2,
-                    p: 4,
-                    textAlign: 'center',
-                    bgcolor: 'background.default',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      bgcolor: 'action.hover',
-                    },
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    border: '2px dashed #ccc', borderRadius: 3, p: 4, minHeight: 280, cursor: 'pointer',
+                    transition: 'all 0.2s', bgcolor: '#fafafa',
+                    '&:hover': { borderColor: '#1976d2', bgcolor: '#f0f7ff' },
                   }}
                 >
-                  {selectedImage ? (
-                    <Box>
-                      <img
-                        src={selectedImage}
-                        alt="Selected"
-                        style={{
-                          maxWidth: '100%',
-                          maxHeight: '300px',
-                          borderRadius: '8px',
-                        }}
-                      />
-                      <Button
-                        variant="outlined"
-                        component="label"
-                        sx={{ mt: 2 }}
-                      >
-                        Change Image
-                        <input
-                          type="file"
-                          hidden
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                        />
-                      </Button>
+                  {image ? (
+                    <Box sx={{ textAlign: 'center' }}>
+                      <img src={image} alt="Preview" style={{ maxWidth: '100%', maxHeight: 220, borderRadius: 12, marginBottom: 12 }} />
+                      <Typography sx={{ ...s.font, color: '#666', fontSize: '0.85rem' }}>Click to change image</Typography>
                     </Box>
                   ) : (
-                    <Button
-                      variant="contained"
-                      component="label"
-                      startIcon={<CloudUploadIcon size={20} />}
-                      size="large"
-                    >
-                      Choose Image
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                      />
-                    </Button>
+                    <>
+                      <CloudArrowUp size={56} color="#1976d2" weight="duotone" />
+                      <Typography sx={{ ...s.font, fontWeight: 600, mt: 2, color: '#333' }}>Drop image here or click to upload</Typography>
+                      <Typography sx={{ ...s.font, color: '#999', fontSize: '0.8rem', mt: 0.5 }}>JPG, PNG up to 10MB</Typography>
+                    </>
                   )}
+                  <input type="file" hidden accept="image/*" onChange={onUpload} />
                 </Box>
-                
-                {selectedImage && (
-                  <Box sx={{ mt: 3 }}>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      size="large"
-                      onClick={handleAnalyze}
-                      disabled={isAnalyzing}
-                      startIcon={<AssessmentIcon />}
-                    >
-                      {isAnalyzing ? 'Analyzing...' : 'Start Analysis'}
-                    </Button>
-                  </Box>
-                )}
 
-                {isAnalyzing && (
-                  <Box sx={{ mt: 2 }}>
-                    <LinearProgress />
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      AI is analyzing the image...
-                    </Typography>
-                  </Box>
-                )}
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={!image || loading}
+                  onClick={analyze}
+                  startIcon={<MagnifyingGlass size={20} weight="bold" />}
+                  sx={{ mt: 2, py: 1.5, borderRadius: 2, textTransform: 'none', fontWeight: 700, ...s.font, bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
+                >
+                  {loading ? 'Analyzing...' : 'Analyze Image'}
+                </Button>
+
+                {loading && <LinearProgress sx={{ mt: 2, borderRadius: 1 }} />}
+                {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
               </Paper>
             </Grid>
 
-            {/* Results Section */}
-            <Grid item xs={12} md={6}>
-              <Paper sx={{ p: 3, height: '100%' }}>
-                <Typography variant="h6" gutterBottom>
-                  Analysis Results
-                </Typography>
-                
-                {!analysisResult && !isAnalyzing && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      minHeight: 300,
-                      color: 'text.secondary',
-                    }}
-                  >
-                    <ImageIcon size={80} style={{ marginBottom: 16, opacity: 0.3 }} />
-                    <Typography variant="body1">
-                      Upload an image to see analysis results
-                    </Typography>
+            {/* Results Card */}
+            <Grid item xs={12} md={5}>
+              <Paper sx={{ p: 3, borderRadius: 4, bgcolor: 'white', height: '100%', boxShadow: '0 2px 20px rgba(0,0,0,0.06)' }}>
+                {!result ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, color: '#999' }}>
+                    <ImageIcon size={64} weight="duotone" />
+                    <Typography sx={{ ...s.font, mt: 2 }}>Results will appear here</Typography>
                   </Box>
-                )}
-
-                {analysisResult && (
+                ) : (
                   <Box>
-                    <Alert severity="info" sx={{ mb: 2 }}>
-                      Analysis completed successfully
-                    </Alert>
-
-                    <Card variant="outlined" sx={{ mb: 2 }}>
-                      <CardContent>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Detected Condition
-                        </Typography>
-                        <Typography variant="h5" gutterBottom>
-                          {analysisResult.condition}
-                        </Typography>
-                        
-                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                          <Chip
-                            label={`${analysisResult.confidence}% Confidence`}
-                            color="primary"
-                            size="small"
-                          />
-                          <Chip
-                            label={`${analysisResult.severity} Severity`}
-                            color={getSeverityColor(analysisResult.severity)}
-                            size="small"
-                          />
-                        </Box>
-
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          Recommendations
-                        </Typography>
-                        <List dense>
-                          {analysisResult.recommendations.map((rec, index) => (
-                            <ListItem key={index} sx={{ pl: 0 }}>
-                              <ListItemIcon sx={{ minWidth: 32 }}>
-                                {analysisResult.severity === 'High' ? (
-                                  <WarningIcon size={20} color="#d32f2f" />
-                                ) : (
-                                  <CheckCircleIcon size={20} color="#2e7d32" />
-                                )}
-                              </ListItemIcon>
-                              <ListItemText primary={rec} />
-                            </ListItem>
-                          ))}
-                        </List>
-
-                        <Typography variant="caption" color="text.secondary">
-                          Analyzed at: {analysisResult.timestamp.toLocaleString()}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Button variant="outlined" fullWidth>
-                        Save Report
-                      </Button>
-                      <Button variant="outlined" fullWidth>
-                        Share
-                      </Button>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                      {isBenign ? <CheckCircle size={28} color="#4caf50" weight="fill" /> : <Warning size={28} color="#f44336" weight="fill" />}
+                      <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.1rem', color: isBenign ? '#4caf50' : '#f44336' }}>
+                        {isBenign ? 'Likely Benign' : 'Needs Attention'}
+                      </Typography>
                     </Box>
+
+                    <Box sx={{ bgcolor: '#f8f9fa', borderRadius: 3, p: 2.5, mb: 2 }}>
+                      <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem', mb: 0.5 }}>Detected Condition</Typography>
+                      <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.4rem', color: '#1a1a2e' }}>{result.lesion_name}</Typography>
+                    </Box>
+
+                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                      <Grid item xs={6}>
+                        <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 2, textAlign: 'center' }}>
+                          <Typography sx={{ ...s.font, fontWeight: 800, fontSize: '1.5rem', color: '#1976d2' }}>{result.confidence}%</Typography>
+                          <Typography sx={{ ...s.font, color: '#666', fontSize: '0.75rem' }}>Confidence</Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Box sx={{ bgcolor: '#f3e5f5', borderRadius: 2, p: 2, textAlign: 'center' }}>
+                          <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1rem', color: '#7b1fa2' }}>{result.lesion_code}</Typography>
+                          <Typography sx={{ ...s.font, color: '#666', fontSize: '0.75rem' }}>Classification</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                      <Chip label={result.binary_prediction} color={isBenign ? 'success' : 'error'} size="small" sx={{ fontWeight: 600 }} />
+                      <Chip label={result.filename} variant="outlined" size="small" />
+                    </Box>
+
+                    <Alert severity="info" sx={{ ...s.font, fontSize: '0.8rem' }}>
+                      This is an AI prediction. Please consult a dermatologist for proper diagnosis.
+                    </Alert>
                   </Box>
                 )}
-              </Paper>
-            </Grid>
-
-            {/* Recent Analyses */}
-            <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Recent Analyses
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Your analysis history will appear here. Connect to backend to load previous results.
-                </Typography>
               </Paper>
             </Grid>
           </Grid>
@@ -399,5 +184,3 @@ function Analysis() {
     </Box>
   );
 }
-
-export default Analysis;
