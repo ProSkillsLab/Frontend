@@ -8,7 +8,6 @@ import {
   TextField,
   Divider,
   Avatar,
-  Chip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -30,7 +29,15 @@ export default function Support() {
   //State handlers
   
   const [contactOpen, setContactOpen] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState<{ 
+    open: boolean;
+    message: string; 
+    severity: "success" | "error" | "warning"| "info"; 
+  }>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const [feedback, setFeedback] = useState<number | null>(null);
 
   //Support content sections
