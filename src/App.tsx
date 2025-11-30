@@ -8,6 +8,8 @@ import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Analysis from './pages/Analysis';
 import ProtectedRoute from './components/ProtectedRoute';
+import Support from "./pages/Support";
+
 
 // Import your Clerk publishable key from environment variables
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
@@ -85,6 +87,7 @@ function App() {
               }
             />
             <Route path="/about" element={<About />} />
+            <Route path="/support" element={<Support />} />
           </Routes>
         </Router>
         </div>
