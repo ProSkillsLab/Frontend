@@ -129,7 +129,8 @@ function Footer() {
                 API Reference
               </Link>
               <Link
-                href="#"
+                component={RouterLink}
+                to="/support"
                 color="text.secondary"
                 underline="hover"
                 sx={{ '&:hover': { color: 'primary.main' } }}
