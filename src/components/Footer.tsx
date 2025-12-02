@@ -146,7 +146,8 @@ function Footer() {
                 Privacy Policy
               </Link>
               <Link
-                href="#"
+                component={RouterLink}
+                to="/termsofservice"
                 color="text.secondary"
                 underline="hover"
                 sx={{ '&:hover': { color: 'primary.main' } }}
