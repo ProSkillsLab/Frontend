@@ -1,27 +1,22 @@
 import { useState } from 'react';
 import { Box, Container, AppBar, Toolbar, Typography, IconButton, Grid, Paper, Button, LinearProgress, Chip, Alert } from '@mui/material';
-import { List as MenuIcon, CloudArrowUp, Image as ImageIcon, MagnifyingGlass, CheckCircle, Warning } from 'phosphor-react';
-import { UserButton } from '@clerk/clerk-react';
+import { List as MenuIcon, CloudArrowUp, Image as ImageIcon, MagnifyingGlass, CheckCircle, Warning, FilePdf } from 'phosphor-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
+import AnalysisReport, { type AnalysisResult, generatePrintHTML } from '../components/AnalysisReport';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
 
-interface Result {
-  filename: string;
-  lesion_code: string;
-  lesion_name: string;
-  binary_prediction: string;
-  confidence: number;
-}
-
 export default function Analysis() {
+  const { user } = useUser();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<Result | null>(null);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -35,6 +30,73 @@ export default function Analysis() {
     }
   };
 
+  // Save analysis result to database and get scan count
+  const saveAnalysisToDatabase = async (analysisResult: AnalysisResult, imageBase64: string): Promise<number | null> => {
+    try {
+      const response = await fetch(`${API_URL}/api/analysis/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_email: user?.primaryEmailAddress?.emailAddress,
+          filename: analysisResult.filename,
+          lesion_code: analysisResult.lesion_code,
+          lesion_name: analysisResult.lesion_name,
+          binary_prediction: analysisResult.binary_prediction,
+          confidence: analysisResult.confidence,
+          image_data: imageBase64,
+          analyzed_at: new Date().toISOString(),
+        }),
+      });
+      
+      if (!response.ok) {
+        console.error('Failed to save analysis to database');
+        return null;
+      }
+      
+      // Get the response with scan count
+      const data = await response.json();
+      return data.total_scans || null;
+    } catch (err) {
+      console.error('Error saving analysis to database:', err);
+      return null;
+    }
+  };
+
+  // Save report to database automatically
+  const saveReportToDatabase = async (analysisResult: AnalysisResult, imageBase64: string) => {
+    try {
+      const now = new Date();
+      const response = await fetch(`${API_URL}/api/reports/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user?.id,
+          user_email: user?.primaryEmailAddress?.emailAddress,
+          report_type: 'skin_analysis',
+          filename: analysisResult.filename,
+          lesion_code: analysisResult.lesion_code,
+          lesion_name: analysisResult.lesion_name,
+          binary_prediction: analysisResult.binary_prediction,
+          confidence: analysisResult.confidence,
+          image_data: imageBase64,
+          report_html: generatePrintHTML(imageBase64, analysisResult),
+          generated_at: now.toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save report to database');
+      }
+    } catch (err) {
+      console.error('Error saving report to database:', err);
+    }
+  };
+
   const analyze = async () => {
     if (!file) return;
     setLoading(true);
@@ -45,13 +107,20 @@ export default function Analysis() {
       const res = await fetch(`${API_URL}/predict`, { method: 'POST', body: form });
       if (!res.ok) throw new Error(`Analysis failed: ${res.statusText}`);
       const data = await res.json();
-      setResult({
+      const analysisResult: AnalysisResult = {
         filename: data.filename || file.name,
         lesion_code: data.lesion_code || 'Unknown',
         lesion_name: data.lesion_name || 'Unknown',
         binary_prediction: data.binary_prediction || 'Unknown',
         confidence: data.confidence ? parseFloat((data.confidence * 100).toFixed(1)) : 0,
-      });
+      };
+      setResult(analysisResult);
+      
+      // Save analysis and report to database automatically
+      if (image) {
+        await saveAnalysisToDatabase(analysisResult, image);
+        await saveReportToDatabase(analysisResult, image);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze image');
     } finally {
@@ -61,20 +130,30 @@ export default function Analysis() {
 
   const isBenign = result?.binary_prediction.toLowerCase() === 'benign';
 
+  // Show report view
+  if (showReport && image && result) {
+    return <AnalysisReport image={image} result={result} onClose={() => setShowReport(false)} />;
+  }
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f7fa' }}>
       <LeftNavbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
       <AppBar position="fixed" elevation={0} sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}>
         <Toolbar>
-          <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2, display: { sm: 'none' }, color: '#333' }}><MenuIcon size={24} /></IconButton>
-          <Typography variant="h6" sx={{ ...s.font, fontWeight: 700, color: '#1a1a2e', flexGrow: 1 }}>Skin Analysis</Typography>
+          <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2, display: { sm: 'none' }, color: '#333' }}>
+            <MenuIcon size={24} />
+          </IconButton>
+          <Typography variant="h6" sx={{ ...s.font, fontWeight: 700, color: '#1a1a2e', flexGrow: 1 }}>
+            Skin Analysis
+          </Typography>
           <UserButton afterSignOutUrl="/" />
         </Toolbar>
       </AppBar>
 
       <Box component="main" sx={{ flexGrow: 1, pt: 10, pb: 4, px: { xs: 2, sm: 4 } }}>
         <Container maxWidth="lg">
+          {/* Header */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography variant="h4" sx={{ ...s.font, fontWeight: 800, color: '#1a1a2e', mb: 1 }}>
               AI-Powered Skin Analysis
@@ -139,6 +218,7 @@ export default function Analysis() {
                   </Box>
                 ) : (
                   <Box>
+                    {/* Diagnosis Header */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                       {isBenign ? <CheckCircle size={28} color="#4caf50" weight="fill" /> : <Warning size={28} color="#f44336" weight="fill" />}
                       <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.1rem', color: isBenign ? '#4caf50' : '#f44336' }}>
@@ -146,11 +226,13 @@ export default function Analysis() {
                       </Typography>
                     </Box>
 
+                    {/* Condition */}
                     <Box sx={{ bgcolor: '#f8f9fa', borderRadius: 3, p: 2.5, mb: 2 }}>
                       <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem', mb: 0.5 }}>Detected Condition</Typography>
                       <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.4rem', color: '#1a1a2e' }}>{result.lesion_name}</Typography>
                     </Box>
 
+                    {/* Stats */}
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       <Grid item xs={6}>
                         <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 2, textAlign: 'center' }}>
@@ -166,14 +248,37 @@ export default function Analysis() {
                       </Grid>
                     </Grid>
 
+                    {/* Chips */}
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Chip label={result.binary_prediction} color={isBenign ? 'success' : 'error'} size="small" sx={{ fontWeight: 600 }} />
                       <Chip label={result.filename} variant="outlined" size="small" />
                     </Box>
 
-                    <Alert severity="info" sx={{ ...s.font, fontSize: '0.8rem' }}>
+                    {/* Disclaimer */}
+                    <Alert severity="info" sx={{ ...s.font, fontSize: '0.8rem', mb: 2 }}>
                       This is an AI prediction. Please consult a dermatologist for proper diagnosis.
                     </Alert>
+
+                    {/* Generate Report Button */}
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      startIcon={<FilePdf size={20} weight="bold" />}
+                      onClick={() => setShowReport(true)}
+                      sx={{
+                        py: 1.5,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        ...s.font,
+                        bgcolor: '#2e7d32',
+                        color: 'white',
+                        '&:hover': { bgcolor: '#1b5e20' },
+                      }}
+                    >
+                      📄 Generate Report
+                    </Button>
                   </Box>
                 )}
               </Paper>

@@ -12,9 +12,8 @@ import {
 } from '@mui/material';
 import {
   SquaresFour as DashboardIcon,
-  Users as PeopleIcon,
   ChartLine as AssessmentIcon,
-  Info as InfoIcon,
+  FileText as ReportsIcon,
   X as CloseIcon,
 } from 'phosphor-react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
@@ -27,9 +26,8 @@ const s = {
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon size={24} />, route: '/dashboard' },
-  { text: 'Patients', icon: <PeopleIcon size={24} />, route: '/patients' },
   { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
-  { text: 'About', icon: <InfoIcon size={24} />, route: '/about' },
+  { text: 'Reports', icon: <ReportsIcon size={24} />, route: '/reports' },
 ];
 
 interface LeftNavbarProps {
