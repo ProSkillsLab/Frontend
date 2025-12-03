@@ -10,6 +10,7 @@ import Analysis from './pages/Analysis';
 import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 
 // Import your Clerk publishable key from environment variables
@@ -89,6 +90,7 @@ function App() {
             />
             <Route path="/about" element={<About />} />
             <Route path="/support" element={<Support />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="/termsofservice" element={<TermsOfService />} />
           </Routes>
         </Router>
