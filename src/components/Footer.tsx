@@ -138,7 +138,8 @@ function Footer() {
                 Support
               </Link>
               <Link
-                href="#"
+                component={RouterLink}
+                to="/privacy"
                 color="text.secondary"
                 underline="hover"
                 sx={{ '&:hover': { color: 'primary.main' } }}
