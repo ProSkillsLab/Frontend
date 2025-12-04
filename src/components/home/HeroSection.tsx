@@ -29,7 +29,7 @@ const cornerBracket = (position: keyof typeof cornerPositions) => ({ ...styles.c
 
 // Steps data
 const steps = [
-  { image: '/step1.jpg', step: 'STEP 1', title: 'Take a photo of a skin problem', bgColor: '#4FC3F7' },
+  { image: '/fixstep1.png', step: 'STEP 1', title: 'Take a photo with Dermatology Camera', bgColor: '#4FC3F7' },
   { image: '/step2.jpg', step: 'STEP 2', title: 'AI instantly analyzes your photo', bgColor: '#1E88E5' },
   { image: '/step3.jpg', step: 'STEP 3', title: 'Get a personalized PDF report', bgColor: '#26A69A' },
   { image: '/step4.jpg', step: 'STEP 4', title: 'AI Consultant explains your result', bgColor: '#AB47BC' },

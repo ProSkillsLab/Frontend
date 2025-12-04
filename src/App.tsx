@@ -7,6 +7,7 @@ import About from './pages/About';
 import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Analysis from './pages/Analysis';
+import Reports from './pages/Reports';
 import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
@@ -85,6 +86,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Analysis />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
                 </ProtectedRoute>
               }
             />

@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert,
   keyframes,
+  Skeleton,
 } from '@mui/material';
 import {
   List as MenuIcon,
@@ -64,14 +65,15 @@ const s = {
   }),
 };
 
-// Data
-const statsData = [
-  { icon: <PeopleIcon size={28} weight="duotone" />, value: '1,234', label: 'Total Scans', bgColor: '#4FC3F7' },
-  { icon: <Clock size={28} weight="duotone" />, value: '24', label: 'This Week', bgColor: '#1E88E5' },
-  { icon: <CheckCircle size={28} weight="duotone" />, value: '8', label: 'Pending Reviews', bgColor: '#26A69A' },
-  { icon: <FileText size={28} weight="duotone" />, value: '156', label: 'Reports Generated', bgColor: '#AB47BC' },
-];
+// Data types
+interface UserStats {
+  totalScans: number;
+  scansThisWeek: number;
+  pendingReviews: number;
+  reportsGenerated: number;
+}
 
+// Quick actions config
 const quickActions = [
   { icon: <Camera size={24} weight="duotone" />, title: 'New Scan', description: 'Start a new skin analysis', route: '/analysis', bgColor: '#E3F2FD' },
   { icon: <FileText size={24} weight="duotone" />, title: 'View Reports', description: 'Access your scan history', route: '/reports', bgColor: '#E8F5E9' },
@@ -79,11 +81,15 @@ const quickActions = [
 ];
 
 // Components
-const StatCard = ({ icon, value, label, bgColor, index }: typeof statsData[0] & { index: number }) => (
+const StatCard = ({ icon, value, label, bgColor, index, loading }: { icon: React.ReactNode; value: string | number; label: string; bgColor: string; index: number; loading?: boolean }) => (
   <Paper elevation={0} sx={{ ...s.card, p: { xs: 2, sm: 3 }, display: 'flex', alignItems: 'center', gap: 2, ...s.anim('fadeInUp', 0.1 + index * 0.1), '&:hover': s.cardHover }}>
     <Box sx={{ ...s.iconBox(bgColor, s.iconSize.sm), color: 'white', boxShadow: `0 4px 15px ${bgColor}50` }}>{icon}</Box>
     <Box>
-      <Typography sx={{ ...s.font, fontWeight: 800, fontSize: { xs: '1.5rem', sm: '2rem' }, color: '#1A237E', lineHeight: 1 }}>{value}</Typography>
+      {loading ? (
+        <Skeleton variant="text" width={60} height={40} />
+      ) : (
+        <Typography sx={{ ...s.font, fontWeight: 800, fontSize: { xs: '1.5rem', sm: '2rem' }, color: '#1A237E', lineHeight: 1 }}>{value}</Typography>
+      )}
       <Typography sx={{ ...s.font, color: 'text.secondary', fontSize: { xs: '0.8rem', sm: '0.9rem' } }}>{label}</Typography>
     </Box>
   </Paper>
@@ -104,11 +110,78 @@ const SectionTitle = ({ children, delay = 0 }: { children: React.ReactNode; dela
   <Typography variant="h6" sx={{ ...s.font, ...s.sectionTitle, ...s.anim('fadeInUp', delay) }}>{children}</Typography>
 );
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [stats, setStats] = useState<UserStats>({
+    totalScans: 0,
+    scansThisWeek: 0,
+    pendingReviews: 0,
+    reportsGenerated: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
+
+  // Fetch user statistics from backend
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      if (isLoaded && user) {
+        try {
+          setLoadingStats(true);
+          const url = `${API_URL}/api/analysis/stats/${user.id}`;
+          console.log('Fetching stats from:', url);
+          console.log('User ID:', user.id);
+          
+          const response = await fetch(url);
+          console.log('Stats API response status:', response.status);
+          
+          const data = await response.json();
+          console.log('Stats data received:', data);
+          
+          if (response.ok) {
+            setStats({
+              totalScans: data.total_scans ?? 0,
+              scansThisWeek: data.scans_this_week ?? 0,
+              pendingReviews: data.pending_reviews ?? 0,
+              reportsGenerated: data.reports_generated ?? 0,
+            });
+          } else {
+            console.error('Stats API error:', response.status, data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch user stats:', error);
+        } finally {
+          setLoadingStats(false);
+        }
+      }
+    };
+    fetchUserStats();
+  }, [isLoaded, user]);
+
+  // Sync user profile to backend when user loads
+  useEffect(() => {
+    const syncUserProfile = async () => {
+      if (isLoaded && user) {
+        try {
+          await fetch(`${API_URL}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              user_id: user.id,
+              name: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
+              email: user.primaryEmailAddress?.emailAddress || '',
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to sync user profile:', error);
+        }
+      }
+    };
+    syncUserProfile();
+  }, [isLoaded, user]);
 
   useEffect(() => {
     if (isLoaded && user && showWelcome) {
@@ -157,9 +230,46 @@ function Dashboard() {
         <Container maxWidth="lg" sx={{ py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 3 } }}>
           <SectionTitle>Overview</SectionTitle>
           <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 4, sm: 5 } }}>
-            {statsData.map((stat, index) => (
-              <Grid item xs={6} md={3} key={index}><StatCard {...stat} index={index} /></Grid>
-            ))}
+            <Grid item xs={6} md={3}>
+              <StatCard 
+                icon={<PeopleIcon size={28} weight="duotone" />} 
+                value={stats.totalScans} 
+                label="Total Scans" 
+                bgColor="#4FC3F7" 
+                index={0} 
+                loading={loadingStats} 
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <StatCard 
+                icon={<Clock size={28} weight="duotone" />} 
+                value={stats.scansThisWeek} 
+                label="This Week" 
+                bgColor="#1E88E5" 
+                index={1} 
+                loading={loadingStats} 
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <StatCard 
+                icon={<CheckCircle size={28} weight="duotone" />} 
+                value={stats.pendingReviews} 
+                label="Pending Reviews" 
+                bgColor="#26A69A" 
+                index={2} 
+                loading={loadingStats} 
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <StatCard 
+                icon={<FileText size={28} weight="duotone" />} 
+                value={stats.reportsGenerated} 
+                label="Reports Generated" 
+                bgColor="#AB47BC" 
+                index={3} 
+                loading={loadingStats} 
+              />
+            </Grid>
           </Grid>
 
           <SectionTitle delay={0.2}>Quick Actions</SectionTitle>
