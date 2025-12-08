@@ -12,10 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-<<<<<<< Updated upstream
 import ScientificResearch from './pages/ScientificResearch';
-=======
->>>>>>> Stashed changes
 import SkinMoles from './pages/SkinMoles';
 import SkinCancer from './pages/SkinCancer';
 
