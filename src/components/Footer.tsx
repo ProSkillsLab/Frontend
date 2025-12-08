@@ -113,22 +113,6 @@ function Footer() {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Link
-                href="#"
-                color="text.secondary"
-                underline="hover"
-                sx={{ '&:hover': { color: 'primary.main' } }}
-              >
-                Documentation
-              </Link>
-              <Link
-                href="#"
-                color="text.secondary"
-                underline="hover"
-                sx={{ '&:hover': { color: 'primary.main' } }}
-              >
-                API Reference
-              </Link>
-              <Link
                 component={RouterLink}
                 to="/support"
                 color="text.secondary"
