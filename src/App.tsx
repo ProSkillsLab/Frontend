@@ -12,7 +12,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+<<<<<<< Updated upstream
 import ScientificResearch from './pages/ScientificResearch';
+=======
+import SkinMoles from './pages/SkinMoles';
+import SkinCancer from './pages/SkinCancer';
+>>>>>>> Stashed changes
 
 
 // Import your Clerk publishable key from environment variables
@@ -103,6 +108,8 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="/termsofservice" element={<TermsOfService />} />
+            <Route path="/skin-spots" element={<SkinMoles />} />
+            <Route path="/cancer-info" element={<SkinCancer />} />
           </Routes>
         </Router>
         </div>

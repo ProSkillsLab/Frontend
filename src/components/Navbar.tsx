@@ -2,7 +2,7 @@ import { AppBar, Toolbar, Button, Box, Container, Menu, MenuItem } from '@mui/ma
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { SquaresFour, CaretDown } from 'phosphor-react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -18,6 +18,19 @@ function Navbar() {
   const openSkinHealth = Boolean(skinHealthAnchor);
   const handleOpenSkinHealth = (event: React.MouseEvent<HTMLButtonElement>) => setSkinHealthAnchor(event.currentTarget);
   const handleCloseSkinHealth = () => setSkinHealthAnchor(null);
+
+  // Close all dropdowns on scroll
+  const closeAllMenus = useCallback(() => {
+    setGettingStartedAnchor(null);
+    setSkinHealthAnchor(null);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', closeAllMenus);
+    return () => {
+      window.removeEventListener('scroll', closeAllMenus);
+    };
+  }, [closeAllMenus]);
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#222222' }} elevation={0}>
