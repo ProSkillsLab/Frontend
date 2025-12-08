@@ -12,12 +12,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-<<<<<<< Updated upstream
 import ScientificResearch from './pages/ScientificResearch';
-=======
 import SkinMoles from './pages/SkinMoles';
 import SkinCancer from './pages/SkinCancer';
->>>>>>> Stashed changes
 
 
 // Import your Clerk publishable key from environment variables
