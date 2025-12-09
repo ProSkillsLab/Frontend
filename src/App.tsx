@@ -14,6 +14,9 @@ import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ScientificResearch from './pages/ScientificResearch';
 import ArticlesPage from './pages/AriticlesPage';
+import SkinMoles from './pages/SkinMoles';
+import SkinCancer from './pages/SkinCancer';
+
 
 
 // Import your Clerk publishable key from environment variables
@@ -43,7 +46,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
-        <Router>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
@@ -105,6 +108,8 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="/termsofservice" element={<TermsOfService />} />
+            <Route path="/skin-spots" element={<SkinMoles />} />
+            <Route path="/cancer-info" element={<SkinCancer />} />
           </Routes>
         </Router>
         </div>
