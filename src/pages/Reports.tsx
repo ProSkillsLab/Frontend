@@ -270,8 +270,8 @@ export default function Reports() {
         </Toolbar>
       </AppBar>
 
-      <Box component="main" sx={{ flexGrow: 1, pt: 11, pb: 4, px: { xs: 1.5, sm: 3 }, width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` } }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 0, sm: 2 } }}>
+      <Box component="main" sx={{ flexGrow: 1, pt: 11, pb: 4, px: { xs: 2, sm: 3 } }}>
+        <Container maxWidth="xl">
           {/* Stats Cards */}
           <Box sx={{ display: 'flex', gap: { xs: 1.5, sm: 2 }, mb: 3, flexWrap: 'wrap' }}>
             {getStatsData(reports.length, benignCount, alertCount).map((stat, i) => (

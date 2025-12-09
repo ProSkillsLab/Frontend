@@ -192,84 +192,28 @@ export default function AnalysisReport({ image, result, onClose }: AnalysisRepor
   return (
     <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: '#f5f7fa', zIndex: 9999, overflow: 'auto' }}>
       {/* Header */}
-      <Box sx={{ position: 'sticky', top: 0, background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)', color: 'white', py: { xs: 2, sm: 3 }, px: { xs: 2, sm: 4 }, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 0 }, justifyContent: 'space-between', alignItems: { xs: 'stretch', md: 'center' }, zIndex: 10, boxShadow: '0 4px 20px rgba(25, 118, 210, 0.2)' }}>
-        <Button 
-          startIcon={<ArrowLeft size={20} weight="bold" />} 
-          onClick={onClose} 
-          sx={{ 
-            color: 'white', 
-            textTransform: 'none', 
-            fontWeight: 600,
-            fontSize: '1rem',
-            alignSelf: { xs: 'flex-start', md: 'center' },
-            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)', transform: 'translateX(-2px)' },
-            transition: 'all 0.3s ease'
-          }}
-        >
+      <Box sx={{ position: 'sticky', top: 0, bgcolor: '#1976d2', color: 'white', p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+        <Button startIcon={<ArrowLeft size={20} />} onClick={onClose} sx={{ color: 'white', textTransform: 'none', fontWeight: 600 }}>
           Back to Analysis
         </Button>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: { xs: 'center', md: 'center' } }}>
-          <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FilePdf size={20} weight="duotone" color="white" />
-          </Box>
-          <Typography sx={{ ...s.font, fontWeight: 700, fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
-            Analysis Report
-          </Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography sx={{ ...s.font, fontWeight: 700 }}>📄 Analysis Report</Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="contained"
-            startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <FloppyDisk size={18} weight="duotone" />}
+            startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <FloppyDisk size={18} />}
             onClick={saveReportToDatabase}
             disabled={saving}
-            sx={{ 
-              bgcolor: '#ff9800', 
-              color: 'white', 
-              textTransform: 'none', 
-              fontWeight: 600,
-              borderRadius: 2,
-              px: { xs: 3, sm: 4 },
-              py: 1,
-              boxShadow: '0 4px 12px rgba(255, 152, 0, 0.3)',
-              '&:hover': { 
-                bgcolor: '#f57c00', 
-                transform: 'translateY(-2px)',
-                boxShadow: '0 6px 20px rgba(255, 152, 0, 0.4)'
-              },
-              '&:disabled': { 
-                bgcolor: '#ffcc80', 
-                color: 'white',
-                boxShadow: 'none',
-                transform: 'none'
-              },
-              transition: 'all 0.3s ease'
-            }}
+            sx={{ bgcolor: '#ff9800', color: 'white', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#f57c00' }, '&:disabled': { bgcolor: '#ffcc80', color: 'white' } }}
           >
-            {saving ? 'Saving...' : 'Save Report'}
+            {saving ? 'Saving...' : '💾 Save Report'}
           </Button>
           <Button
             variant="contained"
-            startIcon={<FilePdf size={18} weight="duotone" />}
+            startIcon={<FilePdf size={18} />}
             onClick={handlePrint}
-            sx={{ 
-              bgcolor: '#2e7d32', 
-              textTransform: 'none', 
-              fontWeight: 600,
-              borderRadius: 2,
-              px: { xs: 3, sm: 4 },
-              py: 1,
-              boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
-              '&:hover': { 
-                bgcolor: '#1b5e20',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 6px 20px rgba(46, 125, 50, 0.4)'
-              },
-              transition: 'all 0.3s ease'
-            }}
+            sx={{ bgcolor: '#2e7d32', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#1b5e20' } }}
           >
-            Print / Save PDF
+            🖨️ Print / Save PDF
           </Button>
         </Box>
       </Box>
