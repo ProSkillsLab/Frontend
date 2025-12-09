@@ -9,8 +9,6 @@ import {
   Grid,
   Paper,
   Button,
-  Snackbar,
-  Alert,
   keyframes,
   Skeleton,
 } from '@mui/material';
@@ -113,7 +111,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
   const [stats, setStats] = useState<UserStats>({
     totalScans: 0,
     scansThisWeek: 0,
@@ -182,12 +179,7 @@ function Dashboard() {
     syncUserProfile();
   }, [isLoaded, user]);
 
-  useEffect(() => {
-    if (isLoaded && user && showWelcome) {
-      const timer = setTimeout(() => setShowWelcome(false), 6000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded, user, showWelcome]);
+
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
@@ -269,12 +261,6 @@ function Dashboard() {
           </Grid>
         </Container>
       </Box>
-
-      <Snackbar open={showWelcome} autoHideDuration={6000} onClose={() => setShowWelcome(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} sx={{ zIndex: 9999, mt: 8 }}>
-        <Alert onClose={() => setShowWelcome(false)} severity="success" sx={{ width: '100%', fontSize: '1rem', ...s.font }} variant="filled">
-          Welcome {user?.fullName || user?.firstName || user?.username || 'User'} to DermaAI!
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }
