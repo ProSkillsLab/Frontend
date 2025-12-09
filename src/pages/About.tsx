@@ -1,6 +1,5 @@
 import { Box, Container, Typography, Grid, Paper, Button, keyframes } from '@mui/material';
 import { Target, Heart, Users, ShieldCheck, Sparkle, Lightbulb, EnvelopeSimple } from 'phosphor-react';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 // Animations & Styles
@@ -58,7 +57,6 @@ const CardGrid = <T extends object>({ items, render, md = 4 }: { items: T[]; ren
 function About() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Navbar />
       {/* Hero */}
       <Box sx={{ background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 50%, #1A237E 100%)', color: 'white', py: { xs: 8, sm: 10, md: 12 }, px: { xs: 2, sm: 0 }, overflow: 'hidden' }}>
         <Container maxWidth="lg">
@@ -72,6 +70,11 @@ function About() {
               <Box sx={{ display: 'flex', gap: 2, ...s.anim('fadeInLeft', 0.3) }}>
                 <Button variant="contained" size="large" sx={{ ...s.font, bgcolor: 'white', color: 'primary.main', fontWeight: 700, px: 4, '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' } }}>Get Started</Button>
                 <Button variant="outlined" size="large" sx={{ ...s.font, borderColor: 'rgba(255,255,255,0.5)', color: 'white', fontWeight: 600, px: 4, '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}>Learn More</Button>
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }}>
+              <Box sx={{ ...s.anim('fadeInRight', 0.3) }}>
+                <Box component="img" src="/about-hero.jpg" alt="About DermaAI" sx={{ width: '100%', maxHeight: 450, borderRadius: 4, objectFit: 'cover', boxShadow: '0 25px 50px rgba(0,0,0,0.3)' }} />
               </Box>
             </Grid>
           </Grid>
@@ -98,17 +101,22 @@ function About() {
       <Box sx={{ ...s.section, bgcolor: 'white' }}>
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ ...s.anim('fadeInLeft'), display: 'flex', justifyContent: 'center' }}>
+                <Box component="img" src="https://talent-minds.com/wp-content/uploads/2022/03/skillsoft_icon_goals.gif" alt="Our Mission" sx={{ width: '100%', maxWidth: 400, borderRadius: 4 }} />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <Box sx={s.anim('fadeInRight')}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
                   <Box sx={s.iconBox('#E8F5E9', 50)}><Target size={24} weight="duotone" color="#4CAF50" /></Box>
                   <Typography variant="overline" sx={{ ...s.font, color: '#4CAF50', letterSpacing: 2, fontWeight: 700 }}>OUR MISSION</Typography>
                 </Box>
-                <Typography variant="h3" sx={{ ...s.title, textAlign: 'center' }}>Empowering Better Skin Health</Typography>
-                <Typography color="text.secondary" sx={{ ...s.font, fontSize: '1.05rem', lineHeight: 1.8, mb: 3, textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
+                <Typography variant="h3" sx={s.title}>Empowering Better Skin Health</Typography>
+                <Typography color="text.secondary" sx={{ ...s.font, fontSize: '1.05rem', lineHeight: 1.8, mb: 3 }}>
                   Our mission is to make professional-grade skin analysis accessible to everyone. By combining advanced AI with dermatological expertise, we help individuals identify potential skin concerns early.
                 </Typography>
-                <Typography color="text.secondary" sx={{ ...s.font, fontSize: '1.05rem', lineHeight: 1.8, textAlign: 'center', maxWidth: 800, mx: 'auto' }}>
+                <Typography color="text.secondary" sx={{ ...s.font, fontSize: '1.05rem', lineHeight: 1.8 }}>
                   We believe that early detection and awareness are key to maintaining healthy skin. Our technology bridges the gap between curiosity and professional consultation.
                 </Typography>
               </Box>

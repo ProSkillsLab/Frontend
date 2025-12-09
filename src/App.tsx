@@ -13,8 +13,10 @@ import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ScientificResearch from './pages/ScientificResearch';
+import ArticlesPage from './pages/AriticlesPage';
 import SkinMoles from './pages/SkinMoles';
 import SkinCancer from './pages/SkinCancer';
+
 
 
 // Import your Clerk publishable key from environment variables
@@ -49,6 +51,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/research" element={<ScientificResearch />} />
+            <Route path="/articles" element={<ArticlesPage />} />
             <Route
               path="/sign-in/*"
               element={
