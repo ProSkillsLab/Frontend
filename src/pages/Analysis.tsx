@@ -5,7 +5,7 @@ import { UserButton, useUser } from '@clerk/clerk-react';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 import AnalysisReport, { type AnalysisResult, generatePrintHTML } from '../components/AnalysisReport';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
 
 export default function Analysis() {
