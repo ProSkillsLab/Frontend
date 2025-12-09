@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ClerkProvider, SignIn, SignUp } from '@clerk/clerk-react';
@@ -111,6 +111,7 @@ function App() {
             <Route path="/termsofservice" element={<TermsOfService />} />
             <Route path="/skin-spots" element={<SkinMoles />} />
             <Route path="/cancer-info" element={<SkinCancer />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
         </div>

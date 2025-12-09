@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Button, Box, Container, Menu, MenuItem, Typography } from '@mui/material';
+import { AppBar, Toolbar, Button, Box, Container, Menu, MenuItem, Typography, type SxProps, type Theme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { SquaresFour, CaretDown, Compass, Flask, Circle, FirstAidKit, Article } from 'phosphor-react';
@@ -26,18 +26,6 @@ const styles = {
     transition: 'all 0.2s ease',
     '&:hover': { bgcolor: 'rgba(37, 99, 235, 0.2)', transform: 'translateX(4px)' },
   },
-  dropdownBtn: (isOpen: boolean) => ({
-    textTransform: 'none' as const,
-    fontSize: '1rem',
-    fontWeight: 500,
-    mx: 1,
-    py: 1,
-    px: 2,
-    borderRadius: 2,
-    transition: 'all 0.2s ease',
-    bgcolor: isOpen ? 'rgba(255,255,255,0.1)' : 'transparent',
-    '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-  }),
   navBtn: {
     textTransform: 'none' as const,
     fontSize: '1rem',
@@ -48,6 +36,20 @@ const styles = {
     borderRadius: 2,
     transition: 'all 0.2s ease',
     '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+  },
+  ctaBtn: {
+    bgcolor: '#2563EB',
+    color: 'white',
+    textTransform: 'none' as const,
+    fontSize: '1rem',
+    fontWeight: 600,
+    ml: 2,
+    px: 3,
+    py: 1,
+    borderRadius: 2,
+    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.4)',
+    transition: 'all 0.2s ease',
+    '&:hover': { bgcolor: '#1d4ed8', transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(37, 99, 235, 0.5)' },
   },
 };
 
@@ -78,6 +80,21 @@ const DropdownItem = ({ icon: IconComp, color, bgColor, title, subtitle, onClick
   </MenuItem>
 );
 
+// Reusable nav button component
+const NavButton = ({ label, icon: IconComp, onClick, variant = 'text', sx }: {
+  label: string; icon?: Icon; onClick: () => void; variant?: 'text' | 'contained'; sx?: SxProps<Theme>;
+}) => (
+  <Button
+    color="inherit"
+    variant={variant}
+    startIcon={IconComp && <IconComp size={18} weight="duotone" />}
+    onClick={onClick}
+    sx={{ ...styles.navBtn, ...sx }}
+  >
+    {label}
+  </Button>
+);
+
 // Reusable dropdown component
 const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate }: {
   label: string; isOpen: boolean; anchorEl: HTMLElement | null;
@@ -87,9 +104,12 @@ const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate
   <>
     <Button
       color="inherit"
+      aria-haspopup="true"
+      aria-expanded={isOpen}
+      aria-label={`${label} menu`}
       endIcon={<CaretDown size={16} weight="bold" style={{ transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />}
       onClick={onOpen}
-      sx={styles.dropdownBtn(isOpen)}
+      sx={{ ...styles.navBtn, bgcolor: isOpen ? 'rgba(255,255,255,0.1)' : 'transparent' }}
     >
       {label}
     </Button>
@@ -97,7 +117,7 @@ const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate
       anchorEl={anchorEl}
       open={isOpen}
       onClose={onClose}
-      MenuListProps={{ sx: { py: 1 } }}
+      MenuListProps={{ sx: { py: 1 }, role: 'menu', 'aria-label': `${label} options` }}
       PaperProps={{ sx: styles.paper }}
       transformOrigin={{ horizontal: 'left', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -161,28 +181,9 @@ function Navbar() {
               navigate={navigate}
             />
 
-            <Button color="inherit" startIcon={<Article size={18} weight="duotone" />} onClick={() => navigate('/articles')} sx={styles.navBtn}>
-              Articles
-            </Button>
+            <NavButton label="Articles" icon={Article} onClick={() => navigate('/articles')} />
 
-            <Button
-              variant="contained"
-              onClick={() => navigate('/sign-up')}
-              sx={{
-                bgcolor: '#2563EB',
-                color: 'white',
-                textTransform: 'none',
-                fontSize: '1rem',
-                fontWeight: 600,
-                ml: 2,
-                px: 3,
-                py: 1,
-                borderRadius: 2,
-                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.4)',
-                transition: 'all 0.2s ease',
-                '&:hover': { bgcolor: '#1d4ed8', transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(37, 99, 235, 0.5)' },
-              }}
-            >
+            <Button variant="contained" onClick={() => navigate('/sign-up')} sx={styles.ctaBtn}>
               Try DERMAAI
             </Button>
           </Box>
