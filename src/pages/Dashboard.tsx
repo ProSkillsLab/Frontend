@@ -21,7 +21,6 @@ import {
   Camera,
   FileText,
   Clock,
-  CheckCircle,
 } from 'phosphor-react';
 import { useNavigate } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
@@ -252,21 +251,11 @@ function Dashboard() {
             </Grid>
             <Grid item xs={6} md={3}>
               <StatCard 
-                icon={<CheckCircle size={28} weight="duotone" />} 
-                value={stats.pendingReviews} 
-                label="Pending Reviews" 
-                bgColor="#26A69A" 
-                index={2} 
-                loading={loadingStats} 
-              />
-            </Grid>
-            <Grid item xs={6} md={3}>
-              <StatCard 
                 icon={<FileText size={28} weight="duotone" />} 
                 value={stats.reportsGenerated} 
                 label="Reports Generated" 
                 bgColor="#AB47BC" 
-                index={3} 
+                index={2} 
                 loading={loadingStats} 
               />
             </Grid>
