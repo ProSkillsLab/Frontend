@@ -19,6 +19,7 @@ import SkinCancer from './pages/SkinCancer';
 
 
 
+
 // Import your Clerk publishable key from environment variables
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
 
@@ -106,7 +107,7 @@ function App() {
             />
             <Route path="/about" element={<About />} />
             <Route path="/support" element={<Support />} />
-            <Route path="privacy" element={<PrivacyPolicy />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/termsofservice" element={<TermsOfService />} />
             <Route path="/skin-spots" element={<SkinMoles />} />
             <Route path="/cancer-info" element={<SkinCancer />} />
