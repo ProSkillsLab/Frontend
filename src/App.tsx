@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ClerkProvider, SignIn, SignUp } from '@clerk/clerk-react';
@@ -41,14 +41,17 @@ const theme = createTheme({
   },
 });
 
-function App() {
+// Inner component that uses router hooks
+function AppRoutes() {
+  const navigate = useNavigate();
+
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <Routes>
+    <ClerkProvider 
+      publishableKey={PUBLISHABLE_KEY}
+      routerPush={(to: string) => navigate(to)}
+      routerReplace={(to: string) => navigate(to, { replace: true })}
+    >
+      <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/research" element={<ScientificResearch />} />
@@ -113,10 +116,20 @@ function App() {
             <Route path="/cancer-info" element={<SkinCancer />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+        </ClerkProvider>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <AppRoutes />
         </Router>
-        </div>
-      </ThemeProvider>
-    </ClerkProvider>
+      </div>
+    </ThemeProvider>
   );
 }
 
