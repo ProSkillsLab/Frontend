@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Box, Typography, Grid, Paper, Button, Snackbar, Alert, CircularProgress } from '@mui/material';
+import type { SxProps } from '@mui/material';
 import { CheckCircle, Warning, FilePdf, ArrowLeft, FloppyDisk } from 'phosphor-react';
 import { useUser } from '@clerk/clerk-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
+const font: SxProps = { fontFamily: '"DM Sans", sans-serif' };
 
 export type AnalysisResult = {
   filename: string;
@@ -19,9 +20,10 @@ interface AnalysisReportProps {
   image: string;
   result: AnalysisResult;
   onClose: () => void;
+  hideSave?: boolean;
 }
 
-// Helper function to format date/time
+// Helper functions
 const formatDateTime = () => {
   const now = new Date();
   return {
@@ -30,18 +32,72 @@ const formatDateTime = () => {
   };
 };
 
-// Helper function to get diagnosis info
 const getDiagnosisInfo = (isBenign: boolean) => ({
   title: isBenign ? 'Likely Benign' : 'Needs Medical Attention',
   subtitle: isBenign ? 'The analyzed lesion appears to be non-cancerous' : 'We recommend consulting a dermatologist',
-  icon: isBenign ? '✅' : '⚠️',
-  colors: {
-    bg: isBenign ? '#e8f5e9' : '#ffebee',
-    border: isBenign ? '#c8e6c9' : '#ffcdd2',
-    text: isBenign ? '#2e7d32' : '#c62828',
-    subtext: isBenign ? '#388e3c' : '#d32f2f',
-  }
+  bg: isBenign ? '#e8f5e9' : '#ffebee',
+  border: isBenign ? '#c8e6c9' : '#ffcdd2',
+  text: isBenign ? '#2e7d32' : '#c62828',
 });
+
+// Reusable Components
+const Label = ({ children }: { children: React.ReactNode }) => (
+  <Typography sx={{ ...font, color: '#666', fontSize: '0.75rem' }}>{children}</Typography>
+);
+
+const Value = ({ children, sx }: { children: React.ReactNode; sx?: SxProps }) => (
+  <Typography sx={{ ...font, fontWeight: 600, ...sx }}>{children}</Typography>
+);
+
+const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+  <Typography sx={{ ...font, fontWeight: 700, mb: 1.5 }}>{children}</Typography>
+);
+
+const InfoBox = ({ label, value, bgcolor = '#f8f9fa', border = '#e0e0e0', valueProps }: {
+  label: string; value: string | number; bgcolor?: string; border?: string; valueProps?: SxProps;
+}) => (
+  <Box sx={{ bgcolor, borderRadius: 2, p: 2, border: `1px solid ${border}` }}>
+    <Label>{label}</Label>
+    <Value sx={valueProps}>{value}</Value>
+  </Box>
+);
+
+const StatBox = ({ label, value, bgcolor, border, color, large }: {
+  label: string; value: string | number; bgcolor: string; border: string; color: string; large?: boolean;
+}) => (
+  <Box sx={{ bgcolor, borderRadius: 2, p: 2, textAlign: 'center', border: `1px solid ${border}` }}>
+    <Typography sx={{ ...font, fontWeight: large ? 800 : 700, fontSize: large ? '2rem' : '1.5rem', color }}>{value}</Typography>
+    <Label>{label}</Label>
+  </Box>
+);
+
+const HeaderBtn = ({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: React.ReactNode }) => (
+  <Button
+    onClick={onClick}
+    disabled={disabled}
+    sx={{
+      bgcolor: 'rgba(255,255,255,0.15)',
+      color: 'white',
+      textTransform: 'none',
+      fontWeight: 500,
+      fontSize: '0.85rem',
+      px: 2,
+      py: 0.75,
+      borderRadius: 1.5,
+      border: '1px solid rgba(255,255,255,0.2)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 0.75,
+      minWidth: 'auto',
+      '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' },
+      '&:disabled': { bgcolor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }
+    }}
+  >
+    {children}
+  </Button>
+);
+
+const Divider = () => <Box sx={{ borderTop: '1px solid #e0e0e0', my: 3 }} />;
 
 // Generate HTML content for PDF printing
 export const generatePrintHTML = (image: string, result: AnalysisResult): string => {
@@ -69,10 +125,9 @@ export const generatePrintHTML = (image: string, result: AnalysisResult): string
           .image-container { border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; text-align: center; background: #fafafa; margin-bottom: 12px; }
           .image-container img { max-width: 100%; max-height: 200px; border-radius: 6px; }
           .image-container .filename { color: #999; font-size: 10px; margin-top: 6px; }
-          .diagnosis { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 12px; background: ${diagnosis.colors.bg}; border: 1px solid ${diagnosis.colors.border}; }
-          .diagnosis .icon { font-size: 28px; }
-          .diagnosis .title { font-weight: 700; font-size: 16px; color: ${diagnosis.colors.text}; }
-          .diagnosis .subtitle { font-size: 11px; margin-top: 2px; color: ${diagnosis.colors.text}; }
+          .diagnosis { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 12px; background: ${diagnosis.bg}; border: 1px solid ${diagnosis.border}; }
+          .diagnosis .title { font-weight: 700; font-size: 16px; color: ${diagnosis.text}; }
+          .diagnosis .subtitle { font-size: 11px; margin-top: 2px; color: ${diagnosis.text}; }
           .detail-box { padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; }
           .detail-box.gray { background: #f5f5f5; border: 1px solid #e0e0e0; }
           .detail-box.blue { background: #e3f2fd; border: 1px solid #90caf9; }
@@ -83,7 +138,7 @@ export const generatePrintHTML = (image: string, result: AnalysisResult): string
           .detail-box.gray .value { color: #1a1a2e; font-size: 16px; }
           .detail-box.blue .value { color: #1565c0; }
           .detail-box.purple .value { color: #7b1fa2; font-size: 16px; }
-          .detail-box.orange .value { color: ${diagnosis.colors.text}; font-size: 14px; }
+          .detail-box.orange .value { color: ${diagnosis.text}; font-size: 14px; }
           .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
           .grid .detail-box { margin-bottom: 0; text-align: center; }
           .disclaimer { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; }
@@ -96,27 +151,26 @@ export const generatePrintHTML = (image: string, result: AnalysisResult): string
         </style>
       </head>
       <body>
-        <div class="header"><h1>🏥 DermaAI</h1><p>AI-Powered Skin Analysis Report</p></div>
+        <div class="header"><h1>DermaAI</h1><p>AI-Powered Skin Analysis Report</p></div>
         <hr class="divider" />
         <div class="date-time">
           <div><div class="label">Report Date</div><div class="value">${date}</div></div>
           <div style="text-align: right;"><div class="label">Report Time</div><div class="value">${time}</div></div>
         </div>
-        <div class="section-title">📷 Analyzed Image</div>
+        <div class="section-title">Analyzed Image</div>
         <div class="image-container"><img src="${image}" alt="Analyzed skin condition" /><div class="filename">File: ${result.filename}</div></div>
-        <div class="section-title">🔬 Diagnosis Result</div>
+        <div class="section-title">Diagnosis Result</div>
         <div class="diagnosis">
-          <div class="icon">${diagnosis.icon}</div>
           <div class="content"><div class="title">${diagnosis.title}</div><div class="subtitle">${diagnosis.subtitle}</div></div>
         </div>
-        <div class="section-title">📊 Detailed Analysis</div>
+        <div class="section-title">Detailed Analysis</div>
         <div class="grid">
           <div class="detail-box gray"><div class="label">Detected Condition</div><div class="value">${result.lesion_name}</div></div>
           <div class="detail-box blue"><div class="label">Confidence</div><div class="value">${result.confidence}%</div></div>
           <div class="detail-box purple"><div class="label">Code</div><div class="value">${result.lesion_code}</div></div>
         </div>
         <div class="detail-box orange"><div class="label">Binary Classification</div><div class="value">${result.binary_prediction}</div></div>
-        <div class="disclaimer"><div class="title">⚠️ Important Disclaimer</div><div class="text">This AI-generated analysis is for informational purposes only. Please consult a qualified dermatologist for proper medical advice and treatment.</div></div>
+        <div class="disclaimer"><div class="title">Important Disclaimer</div><div class="text">This AI-generated analysis is for informational purposes only. Please consult a qualified dermatologist for proper medical advice and treatment.</div></div>
         <hr class="divider" />
         <div class="footer"><div class="main">Report generated by DermaAI • Powered by Advanced Machine Learning</div></div>
         <script>window.onload = function() { setTimeout(function() { window.print(); }, 500); };</script>
@@ -125,21 +179,7 @@ export const generatePrintHTML = (image: string, result: AnalysisResult): string
   `;
 };
 
-// Reusable components for the report display
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <Typography sx={{ ...s.font, fontWeight: 700, mb: 1.5 }}>{children}</Typography>
-);
-
-const DetailBox = ({ label, value, bgcolor, borderColor, valueColor, fontSize = '1.3rem' }: {
-  label: string; value: string | number; bgcolor: string; borderColor: string; valueColor?: string; fontSize?: string;
-}) => (
-  <Box sx={{ bgcolor, borderRadius: 2, p: 2, border: `1px solid ${borderColor}` }}>
-    <Typography sx={{ ...s.font, color: '#666', fontSize: '0.75rem' }}>{label}</Typography>
-    <Typography sx={{ ...s.font, fontWeight: 700, fontSize, color: valueColor }}>{value}</Typography>
-  </Box>
-);
-
-export default function AnalysisReport({ image, result, onClose }: AnalysisReportProps) {
+export default function AnalysisReport({ image, result, onClose, hideSave }: AnalysisReportProps) {
   const { user } = useUser();
   const isBenign = result.binary_prediction.toLowerCase() === 'benign';
   const [saving, setSaving] = useState(false);
@@ -181,40 +221,30 @@ export default function AnalysisReport({ image, result, onClose }: AnalysisRepor
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (!printWindow) {
-      alert('Please allow popups to save the report as PDF');
-      return;
-    }
+    if (!printWindow) return alert('Please allow popups to save the report as PDF');
     printWindow.document.write(generatePrintHTML(image, result));
     printWindow.document.close();
   };
 
   return (
-    <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, bgcolor: '#f5f7fa', zIndex: 9999, overflow: 'auto' }}>
+    <Box sx={{ position: 'fixed', inset: 0, bgcolor: '#f5f7fa', zIndex: 9999, overflow: 'auto' }}>
       {/* Header */}
-      <Box sx={{ position: 'sticky', top: 0, bgcolor: '#1976d2', color: 'white', p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-        <Button startIcon={<ArrowLeft size={20} />} onClick={onClose} sx={{ color: 'white', textTransform: 'none', fontWeight: 600 }}>
-          Back to Analysis
+      <Box sx={{ position: 'sticky', top: 0, bgcolor: '#1976d2', color: 'white', py: 1.5, px: { xs: 2, sm: 4 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <Button onClick={onClose} sx={{ color: 'white', minWidth: 'auto', p: 1, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}>
+          <ArrowLeft size={22} />
         </Button>
-        <Typography sx={{ ...s.font, fontWeight: 700 }}>📄 Analysis Report</Typography>
+        <Typography sx={{ ...font, fontWeight: 600, fontSize: '1rem' }}>Report</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="contained"
-            startIcon={saving ? <CircularProgress size={18} color="inherit" /> : <FloppyDisk size={18} />}
-            onClick={saveReportToDatabase}
-            disabled={saving}
-            sx={{ bgcolor: '#ff9800', color: 'white', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#f57c00' }, '&:disabled': { bgcolor: '#ffcc80', color: 'white' } }}
-          >
-            {saving ? 'Saving...' : '💾 Save Report'}
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<FilePdf size={18} />}
-            onClick={handlePrint}
-            sx={{ bgcolor: '#2e7d32', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#1b5e20' } }}
-          >
-            🖨️ Print / Save PDF
-          </Button>
+          {!hideSave && (
+            <HeaderBtn onClick={saveReportToDatabase} disabled={saving}>
+              {saving ? <CircularProgress size={16} color="inherit" /> : <FloppyDisk size={18} />}
+              {saving ? 'Saving...' : 'Save'}
+            </HeaderBtn>
+          )}
+          <HeaderBtn onClick={handlePrint}>
+            <FilePdf size={18} />
+            Export PDF
+          </HeaderBtn>
         </Box>
       </Box>
 
@@ -227,79 +257,67 @@ export default function AnalysisReport({ image, result, onClose }: AnalysisRepor
       </Snackbar>
 
       {/* Report Content */}
-      <Box sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
-        <Paper sx={{ p: 4, borderRadius: 3 }}>
+      <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: 800, mx: 'auto' }}>
+        <Paper sx={{ p: { xs: 2, sm: 4 }, borderRadius: 3 }}>
           {/* Header */}
           <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <Typography variant="h4" sx={{ ...s.font, fontWeight: 800, color: '#1976d2' }}>DermaAI</Typography>
-            <Typography sx={{ ...s.font, color: '#666' }}>AI-Powered Skin Analysis Report</Typography>
+            <Typography variant="h4" sx={{ ...font, fontWeight: 800, color: '#1976d2' }}>DermaAI</Typography>
+            <Typography sx={{ ...font, color: '#666' }}>AI-Powered Skin Analysis Report</Typography>
           </Box>
 
-          <Box sx={{ borderTop: '1px solid #e0e0e0', my: 3 }} />
+          <Divider />
 
           {/* Date Time */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', bgcolor: '#f8f9fa', p: 2, borderRadius: 2, mb: 3 }}>
-            <Box>
-              <Typography sx={{ ...s.font, color: '#666', fontSize: '0.75rem' }}>Report Date</Typography>
-              <Typography sx={{ ...s.font, fontWeight: 600 }}>{date}</Typography>
-            </Box>
-            <Box sx={{ textAlign: 'right' }}>
-              <Typography sx={{ ...s.font, color: '#666', fontSize: '0.75rem' }}>Report Time</Typography>
-              <Typography sx={{ ...s.font, fontWeight: 600 }}>{time}</Typography>
-            </Box>
+            <Box><Label>Report Date</Label><Value>{date}</Value></Box>
+            <Box sx={{ textAlign: 'right' }}><Label>Report Time</Label><Value>{time}</Value></Box>
           </Box>
 
           {/* Image */}
           <SectionTitle>Analyzed Image</SectionTitle>
           <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 3, p: 2, textAlign: 'center', bgcolor: '#fafafa', mb: 3 }}>
             <img src={image} alt="Analyzed" style={{ maxWidth: '100%', maxHeight: 280, borderRadius: 8 }} />
-            <Typography sx={{ ...s.font, color: '#999', fontSize: '0.75rem', mt: 1 }}>File: {result.filename}</Typography>
+            <Typography sx={{ ...font, color: '#999', fontSize: '0.75rem', mt: 1 }}>File: {result.filename}</Typography>
           </Box>
 
           {/* Diagnosis */}
           <SectionTitle>Diagnosis Result</SectionTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: 3, bgcolor: diagnosis.colors.bg, border: `1px solid ${diagnosis.colors.border}`, mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2.5, borderRadius: 3, bgcolor: diagnosis.bg, border: `1px solid ${diagnosis.border}`, mb: 3 }}>
             {isBenign ? <CheckCircle size={36} color="#4caf50" weight="fill" /> : <Warning size={36} color="#f44336" weight="fill" />}
             <Box>
-              <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.2rem', color: diagnosis.colors.text }}>{diagnosis.title}</Typography>
-              <Typography sx={{ ...s.font, color: diagnosis.colors.subtext, fontSize: '0.85rem' }}>{diagnosis.subtitle}</Typography>
+              <Typography sx={{ ...font, fontWeight: 700, fontSize: '1.2rem', color: diagnosis.text }}>{diagnosis.title}</Typography>
+              <Typography sx={{ ...font, color: diagnosis.text, fontSize: '0.85rem' }}>{diagnosis.subtitle}</Typography>
             </Box>
           </Box>
 
           {/* Details */}
           <SectionTitle>Detailed Analysis</SectionTitle>
-          <DetailBox label="Detected Condition" value={result.lesion_name} bgcolor="#f8f9fa" borderColor="#e0e0e0" />
+          <InfoBox label="Detected Condition" value={result.lesion_name} />
           
           <Grid container spacing={2} sx={{ my: 2 }}>
             <Grid item xs={6}>
-              <Box sx={{ bgcolor: '#e3f2fd', borderRadius: 2, p: 2, textAlign: 'center', border: '1px solid #bbdefb' }}>
-                <Typography sx={{ ...s.font, fontWeight: 800, fontSize: '2rem', color: '#1976d2' }}>{result.confidence}%</Typography>
-                <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem' }}>Confidence Score</Typography>
-              </Box>
+              <StatBox label="Confidence Score" value={`${result.confidence}%`} bgcolor="#e3f2fd" border="#bbdefb" color="#1976d2" large />
             </Grid>
             <Grid item xs={6}>
-              <Box sx={{ bgcolor: '#f3e5f5', borderRadius: 2, p: 2, textAlign: 'center', border: '1px solid #e1bee7' }}>
-                <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.5rem', color: '#7b1fa2' }}>{result.lesion_code}</Typography>
-                <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem' }}>Classification Code</Typography>
-              </Box>
+              <StatBox label="Classification Code" value={result.lesion_code} bgcolor="#f3e5f5" border="#e1bee7" color="#7b1fa2" />
             </Grid>
           </Grid>
 
-          <DetailBox label="Binary Classification" value={result.binary_prediction} bgcolor="#fff3e0" borderColor="#ffe0b2" valueColor={diagnosis.colors.text} fontSize="1.1rem" />
+          <InfoBox label="Binary Classification" value={result.binary_prediction} bgcolor="#fff3e0" border="#ffe0b2" valueProps={{ color: diagnosis.text, fontSize: '1.1rem' }} />
 
           {/* Disclaimer */}
           <Box sx={{ bgcolor: '#fff8e1', borderRadius: 2, p: 2, border: '1px solid #ffecb3', my: 3 }}>
-            <Typography sx={{ ...s.font, fontWeight: 700, color: '#f57c00', fontSize: '0.85rem', mb: 0.5 }}>⚠️ Important Disclaimer</Typography>
-            <Typography sx={{ ...s.font, color: '#795548', fontSize: '0.8rem' }}>
+            <Typography sx={{ ...font, fontWeight: 700, color: '#f57c00', fontSize: '0.85rem', mb: 0.5 }}>⚠️ Important Disclaimer</Typography>
+            <Typography sx={{ ...font, color: '#795548', fontSize: '0.8rem' }}>
               This AI-generated analysis is for informational purposes only. Please consult a qualified dermatologist for proper medical advice.
             </Typography>
           </Box>
 
-          <Box sx={{ borderTop: '1px solid #e0e0e0', my: 2 }} />
+          <Divider />
 
           {/* Footer */}
           <Box sx={{ textAlign: 'center' }}>
-            <Typography sx={{ ...s.font, color: '#999', fontSize: '0.75rem' }}>Report generated by DermaAI • Powered by Advanced Machine Learning</Typography>
+            <Typography sx={{ ...font, color: '#999', fontSize: '0.75rem' }}>Report generated by DermaAI • Powered by Advanced Machine Learning</Typography>
           </Box>
         </Paper>
       </Box>

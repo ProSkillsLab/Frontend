@@ -246,6 +246,7 @@ export default function Reports() {
         image={selectedReport.image_data}
         result={{ filename: selectedReport.filename, lesion_code: selectedReport.lesion_code, lesion_name: selectedReport.lesion_name, binary_prediction: selectedReport.binary_prediction, confidence: selectedReport.confidence }}
         onClose={() => setSelectedReport(null)}
+        hideSave
       />
     );
   }

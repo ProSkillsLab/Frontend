@@ -19,6 +19,7 @@ import SkinCancer from './pages/SkinCancer';
 
 
 
+
 // Import your Clerk publishable key from environment variables
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
 
