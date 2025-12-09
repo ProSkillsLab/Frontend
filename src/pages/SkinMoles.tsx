@@ -4,7 +4,20 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Sun, Camera, FirstAidKit, ShieldCheck, Eye, Warning } from 'phosphor-react';
 
-const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
+const s = {
+  font: { fontFamily: '"DM Sans", sans-serif' },
+  card: {
+    borderRadius: 3,
+    bgcolor: 'white',
+    border: '1px solid rgba(0,0,0,0.06)',
+    transition: 'all 0.3s ease',
+  },
+  cardHover: {
+    transform: 'translateY(-5px)',
+    boxShadow: '0 12px 30px rgba(0,0,0,0.12)',
+  },
+  sectionTitle: { fontWeight: 700, color: '#1A237E', mb: 3 },
+};
 
 // Reusable Components
 const SectionHeader = ({ title, subtitle, centered = false }: { title: string; subtitle?: string; centered?: boolean }) => (
