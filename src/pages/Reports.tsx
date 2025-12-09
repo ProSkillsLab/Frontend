@@ -116,28 +116,28 @@ export default function Reports() {
         </Toolbar>
       </AppBar>
 
-      <Box component="main" sx={{ flexGrow: 1, pt: 11, pb: 4, px: { xs: 1.5, sm: 3 }, width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` } }}>
-        <Container maxWidth="xl" sx={{ px: { xs: 0, sm: 2 } }}>
+      <Box component="main" sx={{ flexGrow: 1, pt: 11, pb: 4, px: { xs: 2, sm: 3 } }}>
+        <Container maxWidth="xl">
           {/* Stats Cards */}
-          <Box sx={{ display: 'flex', gap: { xs: 1.5, sm: 2 }, mb: 3, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
             {[
               { label: 'Total Reports', value: reports.length, icon: <FileText size={20} />, color: '#3b82f6', bg: '#eff6ff' },
               { label: 'Benign', value: benignCount, icon: <CheckCircle size={20} weight="fill" />, color: '#22c55e', bg: '#f0fdf4' },
               { label: 'Needs Attention', value: alertCount, icon: <Warning size={20} weight="fill" />, color: '#ef4444', bg: '#fef2f2' },
             ].map((stat, i) => (
-              <Paper key={i} sx={{ flex: { xs: '1 1 calc(50% - 6px)', sm: '1 1 200px' }, p: { xs: 1.5, sm: 2.5 }, borderRadius: { xs: 2, sm: 3 }, border: '1px solid #e2e8f0', boxShadow: 'none', display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 } }}>
-                <Box sx={{ width: { xs: 36, sm: 44 }, height: { xs: 36, sm: 44 }, borderRadius: { xs: 2, sm: 2.5 }, bgcolor: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: stat.color }}>{stat.icon}</Box>
+              <Paper key={i} sx={{ flex: '1 1 200px', p: 2.5, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none', display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ width: 44, height: 44, borderRadius: 2.5, bgcolor: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: stat.color }}>{stat.icon}</Box>
                 <Box>
-                  <Typography sx={{ ...s.font, fontSize: { xs: '1.2rem', sm: '1.5rem' }, fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{stat.value}</Typography>
-                  <Typography sx={{ ...s.font, fontSize: { xs: '0.7rem', sm: '0.8rem' }, color: '#64748b' }}>{stat.label}</Typography>
+                  <Typography sx={{ ...s.font, fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>{stat.value}</Typography>
+                  <Typography sx={{ ...s.font, fontSize: '0.8rem', color: '#64748b' }}>{stat.label}</Typography>
                 </Box>
               </Paper>
             ))}
           </Box>
 
           {/* Search & Filter Bar */}
-          <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 3, borderRadius: { xs: 2, sm: 3 }, border: '1px solid #e2e8f0', boxShadow: 'none', display: 'flex', gap: { xs: 1, sm: 2 }, alignItems: 'center', flexWrap: 'wrap' }}>
-            <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 200 }, display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#f8fafc', borderRadius: 2, px: 2, py: 1, border: '1px solid #e2e8f0' }}>
+          <Paper sx={{ p: 2, mb: 3, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none', display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Box sx={{ flex: 1, minWidth: 200, display: 'flex', alignItems: 'center', gap: 1, bgcolor: '#f8fafc', borderRadius: 2, px: 2, py: 1, border: '1px solid #e2e8f0' }}>
               <MagnifyingGlass size={18} color="#94a3b8" />
               <input
                 type="text"
@@ -147,7 +147,7 @@ export default function Reports() {
                 style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontFamily: '"DM Sans", sans-serif', fontSize: '0.9rem', color: '#334155' }}
               />
             </Box>
-            <Button startIcon={<SortAscending size={18} />} sx={{ ...s.font, textTransform: 'none', color: '#64748b', fontWeight: 600, display: { xs: 'none', sm: 'flex' } }}>
+            <Button startIcon={<SortAscending size={18} />} sx={{ ...s.font, textTransform: 'none', color: '#64748b', fontWeight: 600 }}>
               Sort by Date
             </Button>
           </Paper>
@@ -170,14 +170,14 @@ export default function Reports() {
               ))}
             </Box>
           ) : filteredReports.length === 0 ? (
-            <Paper sx={{ p: { xs: 4, sm: 8 }, textAlign: 'center', borderRadius: { xs: 3, sm: 4 }, border: '2px dashed #e2e8f0', bgcolor: 'transparent' }}>
-              <Box sx={{ width: { xs: 60, sm: 80 }, height: { xs: 60, sm: 80 }, borderRadius: '50%', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: { xs: 2, sm: 3 } }}>
+            <Paper sx={{ p: 8, textAlign: 'center', borderRadius: 4, border: '2px dashed #e2e8f0', bgcolor: 'transparent' }}>
+              <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
                 <FolderOpen size={36} color="#94a3b8" />
               </Box>
-              <Typography sx={{ ...s.font, fontWeight: 700, color: '#334155', fontSize: { xs: '1rem', sm: '1.2rem' }, mb: 1 }}>
+              <Typography sx={{ ...s.font, fontWeight: 700, color: '#334155', fontSize: '1.2rem', mb: 1 }}>
                 {searchTerm ? 'No matching reports' : 'No reports yet'}
               </Typography>
-              <Typography sx={{ ...s.font, color: '#64748b', maxWidth: 400, mx: 'auto', fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              <Typography sx={{ ...s.font, color: '#64748b', maxWidth: 400, mx: 'auto' }}>
                 {searchTerm ? 'Try a different search term' : 'Start by analyzing a skin condition. Your reports will appear here.'}
               </Typography>
             </Paper>
@@ -187,20 +187,20 @@ export default function Reports() {
                 const isBenign = report.binary_prediction.toLowerCase() === 'benign';
                 return (
                   <Paper key={report._id} sx={{ p: 0, borderRadius: 3, border: '1px solid #e2e8f0', boxShadow: 'none', overflow: 'hidden', transition: 'all 0.2s', '&:hover': { borderColor: '#3b82f6', boxShadow: '0 4px 20px rgba(59,130,246,0.1)' } }}>
-                    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'stretch' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'stretch' }}>
                       {/* Image */}
                       {report.image_data && (
-                        <Box sx={{ width: { xs: '100%', sm: 140 }, height: { xs: 180, sm: 'auto' }, minHeight: { sm: 120 }, bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, borderRight: { sm: '1px solid #e2e8f0' }, borderBottom: { xs: '1px solid #e2e8f0', sm: 'none' } }}>
+                        <Box sx={{ width: 140, minHeight: 120, bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
                           <img src={report.image_data} alt="Scan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </Box>
                       )}
                       
                       {/* Content */}
-                      <Box sx={{ flex: 1, p: { xs: 2, sm: 2.5 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'flex-start', md: 'flex-start' }, justifyContent: 'space-between', gap: 2 }}>
-                          <Box sx={{ flex: 1, width: '100%' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                              <Typography sx={{ ...s.font, fontWeight: 700, fontSize: { xs: '1rem', sm: '1.1rem' }, color: '#0f172a' }}>{report.lesion_name}</Typography>
+                      <Box sx={{ flex: 1, p: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                              <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>{report.lesion_name}</Typography>
                               <Chip 
                                 icon={isBenign ? <CheckCircle size={14} weight="fill" /> : <Warning size={14} weight="fill" />}
                                 label={report.binary_prediction} 
@@ -216,17 +216,17 @@ export default function Reports() {
                               />
                             </Box>
                             
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 3 }, mb: 1.5, flexWrap: 'wrap' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 1.5 }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <Calendar size={14} color="#94a3b8" />
-                                <Typography sx={{ ...s.font, color: '#64748b', fontSize: { xs: '0.75rem', sm: '0.8rem' } }}>{formatDate(report.generated_at)}</Typography>
+                                <Typography sx={{ ...s.font, color: '#64748b', fontSize: '0.8rem' }}>{formatDate(report.generated_at)}</Typography>
                               </Box>
-                              <Typography sx={{ ...s.font, color: '#94a3b8', fontSize: { xs: '0.75rem', sm: '0.8rem' } }}>{formatTime(report.generated_at)}</Typography>
+                              <Typography sx={{ ...s.font, color: '#94a3b8', fontSize: '0.8rem' }}>{formatTime(report.generated_at)}</Typography>
                               <Chip label={report.lesion_code} size="small" sx={{ ...s.font, fontSize: '0.7rem', fontWeight: 600, bgcolor: '#f1f5f9', color: '#475569' }} />
                             </Box>
 
                             {/* Confidence Bar */}
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, maxWidth: { xs: '100%', sm: 300 } }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, maxWidth: 300 }}>
                               <Typography sx={{ ...s.font, fontSize: '0.75rem', color: '#64748b', minWidth: 70 }}>Confidence</Typography>
                               <Box sx={{ flex: 1 }}>
                                 <LinearProgress 
@@ -248,13 +248,13 @@ export default function Reports() {
                           </Box>
 
                           {/* Actions */}
-                          <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, width: { xs: '100%', md: 'auto' }, mt: { xs: 1, md: 0 } }}>
+                          <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
                             <Button 
                               variant="contained" 
                               size="small" 
                               startIcon={<Eye size={16} />} 
                               onClick={() => setSelectedReport(report)} 
-                              sx={{ ...s.font, textTransform: 'none', fontWeight: 600, bgcolor: '#3b82f6', borderRadius: 2, px: 2, flex: { xs: 1, md: 'none' }, '&:hover': { bgcolor: '#2563eb' } }}
+                              sx={{ ...s.font, textTransform: 'none', fontWeight: 600, bgcolor: '#3b82f6', borderRadius: 2, px: 2, '&:hover': { bgcolor: '#2563eb' } }}
                             >
                               View
                             </Button>
