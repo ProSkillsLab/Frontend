@@ -4,7 +4,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Sun, Camera, FirstAidKit, ShieldCheck } from 'phosphor-react';
 
-// Shared styles matching Dashboard
 const s = {
   font: { fontFamily: '"DM Sans", sans-serif' },
   card: {
