@@ -107,7 +107,7 @@ const SectionTitle = ({ children, delay = 0 }: { children: React.ReactNode; dela
   <Typography variant="h6" sx={{ ...s.font, ...s.sectionTitle, ...s.anim('fadeInUp', delay) }}>{children}</Typography>
 );
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -128,14 +128,8 @@ function Dashboard() {
         try {
           setLoadingStats(true);
           const url = `${API_URL}/api/analysis/stats/${user.id}`;
-          console.log('Fetching stats from:', url);
-          console.log('User ID:', user.id);
-          
           const response = await fetch(url);
-          console.log('Stats API response status:', response.status);
-          
           const data = await response.json();
-          console.log('Stats data received:', data);
           
           if (response.ok) {
             setStats({

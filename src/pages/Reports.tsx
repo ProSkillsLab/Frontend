@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Box, Container, AppBar, Toolbar, Typography, IconButton, Paper, Button, Chip, Skeleton, Alert, LinearProgress, Snackbar } from '@mui/material';
+import { Box, Container, AppBar, Toolbar, Typography, IconButton, Paper, Button, Chip, Skeleton, Alert, LinearProgress, Snackbar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { List as MenuIcon, FileText, Eye, Trash, CheckCircle, Warning, Calendar, MagnifyingGlass, SortAscending, FolderOpen } from 'phosphor-react';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 import AnalysisReport from '../components/AnalysisReport';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
 
 interface Report {
@@ -185,6 +185,7 @@ export default function Reports() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; reportId: string | null }>({ open: false, reportId: null });
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
   const { user, isLoaded } = useUser();
 
@@ -201,13 +202,21 @@ export default function Reports() {
     })();
   }, [isLoaded, user]);
 
-  const deleteReport = async (reportId: string) => {
-    if (!confirm('Are you sure you want to delete this report?')) return;
+  const handleDeleteClick = (reportId: string) => {
+    setDeleteConfirm({ open: true, reportId });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ open: false, reportId: null });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const reportId = deleteConfirm.reportId;
+    if (!reportId) return;
+    setDeleteConfirm({ open: false, reportId: null });
     
     // Handle MongoDB ObjectId - might be object like {$oid: "..."} or plain string
     const id = typeof reportId === 'object' ? (reportId as any).$oid || String(reportId) : reportId;
-    console.log('Deleting report with ID:', id);
-    
     setDeleting(id);
     try {
       const res = await fetch(`${API_URL}/api/report/${id}`, { 
@@ -302,7 +311,7 @@ export default function Reports() {
                   key={report._id}
                   report={report}
                   onView={() => setSelectedReport(report)}
-                  onDelete={() => deleteReport(report._id)}
+                  onDelete={() => handleDeleteClick(report._id)}
                   isDeleting={deleting === report._id}
                 />
               ))}
@@ -322,6 +331,33 @@ export default function Reports() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirm.open}
+        onClose={handleDeleteCancel}
+        PaperProps={{ sx: { borderRadius: 3, p: 1 } }}
+      >
+        <DialogTitle sx={{ ...s.font, fontWeight: 700 }}>Delete Report</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ ...s.font }}>
+            Are you sure you want to delete this report? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleDeleteCancel} sx={{ ...s.font, textTransform: 'none', color: '#64748b' }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            variant="contained" 
+            color="error"
+            sx={{ ...s.font, textTransform: 'none', borderRadius: 2 }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

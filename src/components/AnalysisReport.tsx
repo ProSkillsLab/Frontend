@@ -4,7 +4,7 @@ import type { SxProps } from '@mui/material';
 import { CheckCircle, Warning, FilePdf, ArrowLeft, FloppyDisk } from 'phosphor-react';
 import { useUser } from '@clerk/clerk-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const font: SxProps = { fontFamily: '"DM Sans", sans-serif' };
 

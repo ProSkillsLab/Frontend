@@ -104,6 +104,9 @@ const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate
   <>
     <Button
       color="inherit"
+      aria-haspopup="true"
+      aria-expanded={isOpen}
+      aria-label={`${label} menu`}
       endIcon={<CaretDown size={16} weight="bold" style={{ transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />}
       onClick={onOpen}
       sx={{ ...styles.navBtn, bgcolor: isOpen ? 'rgba(255,255,255,0.1)' : 'transparent' }}
@@ -114,7 +117,7 @@ const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate
       anchorEl={anchorEl}
       open={isOpen}
       onClose={onClose}
-      MenuListProps={{ sx: { py: 1 } }}
+      MenuListProps={{ sx: { py: 1 }, role: 'menu', 'aria-label': `${label} options` }}
       PaperProps={{ sx: styles.paper }}
       transformOrigin={{ horizontal: 'left', vertical: 'top' }}
       anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
