@@ -38,6 +38,7 @@ const ScientificResearch: React.FC = () => {
       <Box
         sx={{
           background: "linear-gradient(135deg,#2563EB 0%,#1E40AF 100%)",
+          color:"common.white",
           py: 8,
           borderBottom: "1px solid #e0e0e0",
         }}
@@ -47,7 +48,7 @@ const ScientificResearch: React.FC = () => {
             Scientific Research Behind DERMAAI
           </Typography>
 
-          <Typography variant="h6" color="text.secondary">
+          <Typography variant="h6" >
             Evidence-based evaluation of skin lesions, grounded in dermatology research.
           </Typography>
         </Container>
