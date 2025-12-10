@@ -14,6 +14,7 @@ import {
   SquaresFour as DashboardIcon,
   ChartLine as AssessmentIcon,
   FileText as ReportsIcon,
+  ChartBar as AnalyticsIcon,
   X as CloseIcon,
 } from 'phosphor-react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
@@ -28,6 +29,7 @@ const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon size={24} />, route: '/dashboard' },
   { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
   { text: 'Reports', icon: <ReportsIcon size={24} />, route: '/reports' },
+  { text: 'Analytics', icon: <AnalyticsIcon size={24} />, route: '/analytics' },
 ];
 
 interface LeftNavbarProps {
