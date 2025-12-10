@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Explore from './pages/Explore';
 import Analysis from './pages/Analysis';
 import Reports from './pages/Reports';
+import Analytics from './pages/Analytics';
 import ProtectedRoute from './components/ProtectedRoute';
 import Support from "./pages/Support";
 import TermsOfService from './pages/TermsofService';
@@ -105,6 +106,14 @@ function AppRoutes() {
               element={
                 <ProtectedRoute>
                   <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
                 </ProtectedRoute>
               }
             />
