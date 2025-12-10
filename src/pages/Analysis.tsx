@@ -132,7 +132,7 @@ export default function Analysis() {
 
   // Show report view
   if (showReport && image && result) {
-    return <AnalysisReport image={image} result={result} onClose={() => setShowReport(false)} />;
+    return <AnalysisReport image={image} result={result} onClose={() => setShowReport(false)} hideSave />;
   }
 
   return (
