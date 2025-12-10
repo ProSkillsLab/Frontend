@@ -41,7 +41,22 @@ function LeftNavbar({ mobileOpen = false, onMobileClose }: LeftNavbarProps) {
   const drawerContent = (
     <Box sx={{ background: 'linear-gradient(180deg, #1565C0 0%, #0D47A1 100%)', height: '100%', color: 'white' }}>
       <Toolbar sx={{ borderBottom: '1px solid rgba(255,255,255,0.1)', justifyContent: 'space-between' }}>
-        <Typography variant="h6" noWrap sx={{ ...s.font, fontWeight: 800 }}>DermaAI</Typography>
+        <Typography
+          variant="h6"
+          noWrap
+          component={RouterLink}
+          to="/"
+          sx={{
+            ...s.font,
+            fontWeight: 800,
+            textDecoration: 'none',
+            color: 'inherit',
+            cursor: 'pointer',
+            '&:hover': { opacity: 0.9 },
+          }}
+        >
+          DermaAI
+        </Typography>
         <IconButton onClick={onMobileClose} sx={{ color: 'white', display: { sm: 'none' } }}>
           <CloseIcon size={24} />
         </IconButton>
