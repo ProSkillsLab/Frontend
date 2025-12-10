@@ -15,13 +15,14 @@ const TermsOfService: React.FC = () => {
           py: 8,
           textAlign: "center",
           background: "linear-gradient(135deg,#2563EB 0%,#1E40AF 100%)",
+          color:"common.white",
           borderBottom: "1px solid #ddd"
         }}
       >
         <Typography variant="h3" fontWeight="700">
           Terms of Service
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" mt={1}>
+        <Typography variant="subtitle1"  mt={1}>
           Please read our terms carefully before using our AI skin analysis service.
         </Typography>
       </Box>
