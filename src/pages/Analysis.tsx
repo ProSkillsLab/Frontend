@@ -21,6 +21,18 @@ export default function Analysis() {
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
+      // Validate file type
+      if (!['image/jpeg', 'image/png', 'image/jpg'].includes(f.type)) {
+        setError('Please upload a valid image file (JPG or PNG).');
+        return;
+      }
+
+      // Validate file size (10MB)
+      if (f.size > 10 * 1024 * 1024) {
+        setError('File size exceeds 10MB limit.');
+        return;
+      }
+
       setFile(f);
       setResult(null);
       setError(null);
