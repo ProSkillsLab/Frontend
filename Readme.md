@@ -1,20 +1,28 @@
+
+<p align="center">
+	<img src="https://dermaai.pages.dev/dermaai.png" alt="DermaAI Logo" width="180" />
+</p>
+
 # DermaAI Frontend
 
-AI-Powered Skin Analysis Application - A modern web application for analyzing skin conditions using machine learning.
+AI-Powered Skin Analysis Application — a modern web app for analyzing skin conditions using machine learning.
+
 
 ## 🚀 Features
 
 - **AI Skin Analysis**: Upload skin images for instant AI-powered diagnosis
 - **User Authentication**: Secure login/signup powered by Clerk
-- **Dashboard**: View your scan statistics and quick actions
+- **Dashboard**: View scan statistics and quick actions
 - **Reports**: Automatically saved analysis reports with history
 - **PDF Export**: Generate and print professional analysis reports
+
 
 ## 📋 Prerequisites
 
 - Node.js (v18 or higher)
 - npm or yarn
-- Backend API server running (see [Backend Repository](https://github.com/ThesisLab2025/dermaai-backend))
+- Backend API server running ([Backend Repository](https://github.com/ThesisLab2025/dermaai-backend))
+
 
 ## 🛠️ Installation
 
@@ -36,20 +44,11 @@ npm install
 Copy the example environment file and update with your values:
 
 ```bash
-cp .env.local.example .env.local
+cp .envexample .env.local
 ```
 
-Edit `.env.local` with your configuration:
+Edit `.env.local` with your configuration. See `.envexample` for reference.
 
-```env
-# Clerk Authentication
-# Get your key from https://dashboard.clerk.com
-VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
-
-# API Server
-# Change this to your backend server URL
-VITE_API_URL=http://localhost:8000
-```
 
 ### 4. Start the development server
 
@@ -57,7 +56,8 @@ VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at [http://localhost:5173](http://localhost:5173)
+
 
 ## 🏗️ Build for Production
 
@@ -67,9 +67,10 @@ npm run build
 
 The build output will be in the `dist` folder.
 
+
 ## 📁 Project Structure
 
-```
+```text
 src/
 ├── components/          # Reusable UI components
 │   ├── AnalysisReport.tsx
@@ -90,37 +91,41 @@ src/
 └── main.tsx            # Application entry point
 ```
 
-## 🔗 API Endpoints Required
 
-The frontend expects these backend endpoints:
+## 🔗 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/predict` | AI skin analysis prediction |
-| POST | `/api/analysis/save` | Save analysis result |
-| GET | `/api/analysis/stats/{user_id}` | Get user statistics |
-| POST | `/api/reports/save` | Save analysis report |
-| GET | `/api/reports/{user_id}` | Get user's saved reports |
-| DELETE | `/api/reports/{report_id}` | Delete a report |
-| POST | `/users` | Sync user profile |
+The frontend expects the following backend endpoints:
+
+| Method  | Endpoint                          | Description                      |
+|---------|-----------------------------------|----------------------------------|
+| POST    | `/predict`                        | AI skin analysis prediction      |
+| POST    | `/api/analysis/save`              | Save analysis result             |
+| GET     | `/api/analysis/stats/{user_id}`   | Get user statistics              |
+| POST    | `/api/reports/save`               | Save analysis report             |
+| GET     | `/api/reports/{user_id}`          | Get user's saved reports         |
+| DELETE  | `/api/reports/{report_id}`        | Delete a report                  |
+| POST    | `/users`                          | Sync user profile                |
+
 
 ## 🛡️ Authentication
 
-This app uses [Clerk](https://clerk.com/) for authentication. You need to:
+This app uses [Clerk](https://clerk.com/) for authentication:
 
-1. Create a Clerk account at https://clerk.com
+1. Create a Clerk account at [clerk.com](https://clerk.com)
 2. Create a new application
 3. Copy your Publishable Key
 4. Add it to your `.env.local` file
 
+
 ## 📝 Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| Command           | Description                |
+|-------------------|---------------------------|
+| `npm run dev`     | Start development server   |
+| `npm run build`   | Build for production       |
+| `npm run preview` | Preview production build   |
+| `npm run lint`    | Run ESLint                 |
+
 
 ## 🤝 Contributing
 
@@ -129,6 +134,7 @@ This app uses [Clerk](https://clerk.com/) for authentication. You need to:
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
 
 ## 📄 License
 
