@@ -136,6 +136,4 @@ This app uses [Clerk](https://clerk.com/) for authentication:
 5. Open a Pull Request
 
 
-## 📄 License
 
-This project is part of a thesis project at ThesisLab2025.
