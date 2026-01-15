@@ -17,6 +17,7 @@ import ScientificResearch from './pages/ScientificResearch';
 import ArticlesPage from './pages/AriticlesPage';
 import SkinMoles from './pages/SkinMoles';
 import SkinCancer from './pages/SkinCancer';
+import DermaBot from './components/DermaBot';
 
 
 
@@ -47,85 +48,85 @@ function AppRoutes() {
   const navigate = useNavigate();
 
   return (
-    <ClerkProvider 
+    <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
       routerPush={(to: string) => navigate(to)}
       routerReplace={(to: string) => navigate(to, { replace: true })}
     >
       <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/research" element={<ScientificResearch />} />
-            <Route path="/articles" element={<ArticlesPage />} />
-            <Route
-              path="/sign-in/*"
-              element={
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                  <SignIn 
-                    routing="path" 
-                    path="/sign-in" 
-                    signUpUrl="/sign-up"
-                    forceRedirectUrl="/dashboard"
-                    fallbackRedirectUrl="/dashboard"
-                  />
-                </div>
-              }
-            />
-            <Route
-              path="/sign-up/*"
-              element={
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                  <SignUp 
-                    routing="path" 
-                    path="/sign-up" 
-                    signInUrl="/sign-in"
-                    forceRedirectUrl="/dashboard"
-                    fallbackRedirectUrl="/dashboard"
-                  />
-                </div>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analysis"
-              element={
-                <ProtectedRoute>
-                  <Analysis />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reports"
-              element={
-                <ProtectedRoute>
-                  <Reports />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/about" element={<About />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/termsofservice" element={<TermsOfService />} />
-            <Route path="/skin-spots" element={<SkinMoles />} />
-            <Route path="/cancer-info" element={<SkinCancer />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </ClerkProvider>
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/research" element={<ScientificResearch />} />
+        <Route path="/articles" element={<ArticlesPage />} />
+        <Route
+          path="/sign-in/*"
+          element={
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+              <SignIn
+                routing="path"
+                path="/sign-in"
+                signUpUrl="/sign-up"
+                forceRedirectUrl="/dashboard"
+                fallbackRedirectUrl="/dashboard"
+              />
+            </div>
+          }
+        />
+        <Route
+          path="/sign-up/*"
+          element={
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+              <SignUp
+                routing="path"
+                path="/sign-up"
+                signInUrl="/sign-in"
+                forceRedirectUrl="/dashboard"
+                fallbackRedirectUrl="/dashboard"
+              />
+            </div>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analysis"
+          element={
+            <ProtectedRoute>
+              <Analysis />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/termsofservice" element={<TermsOfService />} />
+        <Route path="/skin-spots" element={<SkinMoles />} />
+        <Route path="/cancer-info" element={<SkinCancer />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ClerkProvider>
   );
 }
 
@@ -136,6 +137,7 @@ function App() {
       <div style={{ overflowX: 'hidden', width: '100%', maxWidth: '100vw' }}>
         <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AppRoutes />
+          <DermaBot />
         </Router>
       </div>
     </ThemeProvider>
