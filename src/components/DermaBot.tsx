@@ -100,7 +100,20 @@ export default function DermaBot() {
         setLoading(true);
 
         try {
-            const history = messages.slice(-4).map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content }] }));
+            // Filter out the initial welcome message to avoid "Model, Model" sequence and keep context relevant
+            // Increase history limit to last 30 messages to maintain longer context
+            const history = messages
+                .filter(m => m.content !== DERMABOT_CONFIG.welcomeMessage)
+                .slice(-30)
+                .map(m => ({
+                    role: m.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: m.content }]
+                }));
+            // Ensure we don't start with a model message (because we strictly follow Model Ack)
+            if (history.length > 0 && history[0].role === 'model') {
+                history.shift();
+            }
+
             const contents = [
                 { role: 'user', parts: [{ text: DERMABOT_SYSTEM_PROMPT }] },
                 { role: 'model', parts: [{ text: DERMABOT_ACK }] },
@@ -111,7 +124,7 @@ export default function DermaBot() {
             const res = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-goog-api-key': API_KEY },
-                body: JSON.stringify({ contents, generationConfig: DERMABOT_CONFIG.generationConfig }),
+                body: JSON.stringify({ contents, generationConfig: DERMABOT_CONFIG.generationConfig, safetySettings: DERMABOT_CONFIG.safetySettings }),
             });
 
             if (!res.ok) throw new Error(`API Error: ${res.status}`);

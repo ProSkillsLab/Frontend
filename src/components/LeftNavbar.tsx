@@ -15,6 +15,7 @@ import {
   ChartLine as AssessmentIcon,
   FileText as ReportsIcon,
   ChartBar as AnalyticsIcon,
+  CurrencyDollar as PricingIcon,
   X as CloseIcon,
 } from 'phosphor-react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
@@ -30,6 +31,7 @@ const menuItems = [
   { text: 'Analysis', icon: <AssessmentIcon size={24} />, route: '/analysis' },
   { text: 'Reports', icon: <ReportsIcon size={24} />, route: '/reports' },
   { text: 'Analytics', icon: <AnalyticsIcon size={24} />, route: '/analytics' },
+  { text: 'Pricing', icon: <PricingIcon size={24} />, route: '/price' },
 ];
 
 interface LeftNavbarProps {
@@ -103,7 +105,7 @@ function LeftNavbar({ mobileOpen = false, onMobileClose }: LeftNavbarProps) {
       >
         {drawerContent}
       </Drawer>
-      
+
       {/* Desktop Drawer */}
       <Drawer
         variant="permanent"

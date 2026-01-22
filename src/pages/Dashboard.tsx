@@ -130,12 +130,29 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fetch user statistics from backend
+  // Fetch user statistics from backend (and verify payment if session_id is present)
   useEffect(() => {
-    const fetchUserStats = async () => {
+    const initDashboard = async () => {
       if (isLoaded && user) {
         try {
           setLoadingStats(true);
+
+          // Check for payment session_id
+          const searchParams = new URLSearchParams(location.search);
+          const sessionId = searchParams.get('session_id');
+
+          if (sessionId) {
+            try {
+              // Verify payment session to update plan immediately
+              await fetch(`${API_URL}/api/payment/verify-session?session_id=${sessionId}`);
+              // Clear the URL parameter locally without reload
+              window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (err) {
+              console.error("Payment verification failed", err);
+            }
+          }
+
+          // Now fetch fresh stats
           const url = `${API_URL}/api/analysis/stats/${user.id}`;
           const response = await fetch(url);
           const data = await response.json();
@@ -161,7 +178,7 @@ function Dashboard() {
         }
       }
     };
-    fetchUserStats();
+    initDashboard();
   }, [isLoaded, user, location.key]);
 
   // Sync user profile to backend when user loads
@@ -261,9 +278,9 @@ function Dashboard() {
             <Grid item xs={6} md={3}>
               <StatCard
                 icon={<Camera size={28} weight="duotone" />}
-                value={`${stats.scansThisMonth}/${stats.monthlyLimit}`}
+                value={stats.monthlyLimit === -1 ? 'Unlimited' : `${stats.scansThisMonth}/${stats.monthlyLimit}`}
                 label="Monthly Scans"
-                bgColor={stats.scansRemaining === 0 ? '#EF5350' : '#66BB6A'}
+                bgColor={stats.monthlyLimit !== -1 && stats.scansRemaining === 0 ? '#EF5350' : '#66BB6A'}
                 index={3}
                 loading={loadingStats}
               />
@@ -274,18 +291,36 @@ function Dashboard() {
           <Paper elevation={0} sx={{ ...s.card, p: { xs: 2, sm: 3 }, mb: { xs: 4, sm: 5 }, ...s.anim('fadeInUp', 0.15) }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
               <Typography sx={{ ...s.font, fontWeight: 600, color: '#1A237E' }}>Monthly Usage</Typography>
-              <Typography sx={{ ...s.font, fontSize: '0.85rem', color: stats.scansRemaining === 0 ? '#EF5350' : 'text.secondary' }}>
-                {stats.scansRemaining === 0 ? 'Limit Reached!' : `${stats.scansRemaining} remaining`}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography sx={{ ...s.font, fontSize: '0.85rem', color: stats.monthlyLimit !== -1 && stats.scansRemaining === 0 ? '#EF5350' : 'text.secondary' }}>
+                  {stats.monthlyLimit === -1 ? 'Unlimited Access' : (stats.scansRemaining === 0 ? 'Limit Reached!' : `${stats.scansRemaining} remaining`)}
+                </Typography>
+                {stats.monthlyLimit !== -1 && stats.scansRemaining === 0 && (
+                  <Button size="small" variant="contained" onClick={() => navigate('/price')} sx={{ ...s.font, fontSize: '0.75rem', py: 0.5, px: 1.5, bgcolor: '#7C4DFF', '&:hover': { bgcolor: '#651FFF' } }}>
+                    Upgrade
+                  </Button>
+                )}
+              </Box>
             </Box>
             <Box sx={{ height: 10, bgcolor: '#E0E0E0', borderRadius: 5, overflow: 'hidden' }}>
-              <Box sx={{ height: '100%', width: `${(stats.scansThisMonth / stats.monthlyLimit) * 100}%`, bgcolor: stats.scansRemaining === 0 ? '#EF5350' : '#4CAF50', borderRadius: 5, transition: 'width 0.5s ease' }} />
+              <Box sx={{
+                height: '100%',
+                width: stats.monthlyLimit === -1 ? '100%' : `${(stats.scansThisMonth / stats.monthlyLimit) * 100}%`,
+                bgcolor: stats.monthlyLimit === -1 ? '#FFB300' : (stats.scansRemaining === 0 ? '#EF5350' : '#4CAF50'),
+                borderRadius: 5,
+                transition: 'width 0.5s ease'
+              }} />
             </Box>
-            {stats.resetsAt && (
-              <Typography sx={{ ...s.font, fontSize: '0.8rem', color: 'text.secondary', mt: 1 }}>
-                Resets: {new Date(stats.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              </Typography>
-            )}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              {stats.resetsAt && (
+                <Typography sx={{ ...s.font, fontSize: '0.8rem', color: 'text.secondary' }}>
+                  Resets: {new Date(stats.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </Typography>
+              )}
+              <Button size="small" onClick={() => navigate('/price')} sx={{ ...s.font, fontSize: '0.8rem', textTransform: 'none' }}>
+                View Plans
+              </Button>
+            </Box>
           </Paper>
 
           <SectionTitle delay={0.2}>Quick Actions</SectionTitle>
