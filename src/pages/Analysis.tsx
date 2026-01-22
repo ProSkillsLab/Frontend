@@ -1,12 +1,29 @@
-import { useState } from 'react';
-import { Box, Container, AppBar, Toolbar, Typography, IconButton, Grid, Paper, Button, LinearProgress, Chip, Alert } from '@mui/material';
-import { List as MenuIcon, CloudArrowUp, Image as ImageIcon, MagnifyingGlass, CheckCircle, Warning, FilePdf } from 'phosphor-react';
 import { UserButton, useUser } from '@clerk/clerk-react';
-import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
+import { Alert, AppBar, Box, Button, Chip, Container, Grid, IconButton, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
+import { CheckCircle, CloudArrowUp, FilePdf, Image as ImageIcon, MagnifyingGlass, List as MenuIcon, Warning } from 'phosphor-react';
+import { useState } from 'react';
 import AnalysisReport, { type AnalysisResult, generatePrintHTML } from '../components/AnalysisReport';
+import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
+
+
+interface DermoscopyError {
+  filename: string;
+  is_dermoscopic: boolean;
+  dermoscopy_score: number;
+  message: string;
+  signals: {
+    edge_means: number[];
+    edge_std: number;
+    border_uniform_score: number;
+    clutter: number;
+    clutter_score: number;
+  };
+}
+
 
 export default function Analysis() {
   const { user } = useUser();
@@ -16,7 +33,9 @@ export default function Analysis() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [dermoscopyError, setDermoscopyError] = useState<DermoscopyError | null>(null);
   const [showReport, setShowReport] = useState(false);
+
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -27,20 +46,24 @@ export default function Analysis() {
         return;
       }
 
+
       // Validate file size (10MB)
       if (f.size > 10 * 1024 * 1024) {
         setError('File size exceeds 10MB limit.');
         return;
       }
 
+
       setFile(f);
       setResult(null);
       setError(null);
+      setDermoscopyError(null);
       const reader = new FileReader();
       reader.onloadend = () => setImage(reader.result as string);
       reader.readAsDataURL(f);
     }
   };
+
 
   // Save analysis result to database and get scan count
   const saveAnalysisToDatabase = async (analysisResult: AnalysisResult, imageBase64: string): Promise<number | null> => {
@@ -77,6 +100,7 @@ export default function Analysis() {
     }
   };
 
+
   // Save report to database automatically
   const saveReportToDatabase = async (analysisResult: AnalysisResult, imageBase64: string) => {
     try {
@@ -101,6 +125,7 @@ export default function Analysis() {
         }),
       });
 
+
       if (!response.ok) {
         console.error('Failed to save report to database');
       }
@@ -109,15 +134,30 @@ export default function Analysis() {
     }
   };
 
+
   const analyze = async () => {
     if (!file) return;
     setLoading(true);
     setError(null);
+    setDermoscopyError(null);
     try {
       const form = new FormData();
       form.append('file', file);
       const res = await fetch(`${API_URL}/predict`, { method: 'POST', body: form });
-      if (!res.ok) throw new Error(`Analysis failed: ${res.statusText}`);
+      
+      // Handle non-dermoscopic image (status 400)
+      if (res.status === 400) {
+        const errorData = await res.json() as DermoscopyError;
+        setDermoscopyError(errorData);
+        setResult(null);
+        setLoading(false);
+        return;
+      }
+      
+      if (!res.ok) {
+        throw new Error(`Analysis failed: ${res.statusText}`);
+      }
+      
       const data = await res.json();
       const analysisResult: AnalysisResult = {
         filename: data.filename || file.name,
@@ -127,6 +167,7 @@ export default function Analysis() {
         confidence: data.confidence ? parseFloat((data.confidence * 100).toFixed(1)) : 0,
       };
       setResult(analysisResult);
+      setDermoscopyError(null);
       
       // Save analysis and report to database automatically
       if (image) {
@@ -135,21 +176,26 @@ export default function Analysis() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to analyze image');
+      setResult(null);
     } finally {
       setLoading(false);
     }
   };
 
+
   const isBenign = result?.binary_prediction.toLowerCase() === 'benign';
+
 
   // Show report view
   if (showReport && image && result) {
     return <AnalysisReport image={image} result={result} onClose={() => setShowReport(false)} hideSave />;
   }
 
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f7fa' }}>
       <LeftNavbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+
 
       <AppBar position="fixed" elevation={0} sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}>
         <Toolbar>
@@ -163,6 +209,7 @@ export default function Analysis() {
         </Toolbar>
       </AppBar>
 
+
       <Box component="main" sx={{ flexGrow: 1, pt: 10, pb: 4, px: { xs: 2, sm: 4 } }}>
         <Container maxWidth="lg">
           {/* Header */}
@@ -171,9 +218,10 @@ export default function Analysis() {
               AI-Powered Skin Analysis
             </Typography>
             <Typography sx={{ ...s.font, color: '#666', maxWidth: 500, mx: 'auto' }}>
-              Upload a clear image of your skin condition for instant AI diagnosis
+              Upload a clear dermoscopic image of your skin condition for instant AI diagnosis
             </Typography>
           </Box>
+
 
           <Grid container spacing={3} justifyContent="center">
             {/* Upload Card */}
@@ -203,6 +251,7 @@ export default function Analysis() {
                   <input type="file" hidden accept="image/*" onChange={onUpload} />
                 </Box>
 
+
                 <Button
                   fullWidth
                   variant="contained"
@@ -215,15 +264,71 @@ export default function Analysis() {
                   {loading ? 'Analyzing...' : 'Analyze Image'}
                 </Button>
 
+
                 {loading && <LinearProgress sx={{ mt: 2, borderRadius: 1 }} />}
                 {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
               </Paper>
             </Grid>
 
+
             {/* Results Card */}
             <Grid item xs={12} md={5}>
               <Paper sx={{ p: 3, borderRadius: 4, bgcolor: 'white', height: '100%', boxShadow: '0 2px 20px rgba(0,0,0,0.06)' }}>
-                {!result ? (
+                {/* Dermoscopy Error (Not dermoscopic image) */}
+                {dermoscopyError && !result ? (
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                      <Warning size={28} color="#ff9800" weight="fill" />
+                      <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.1rem', color: '#ff9800' }}>
+                        Not a Dermoscopic Image
+                      </Typography>
+                    </Box>
+
+                    <Alert severity="warning" sx={{ mb: 2 }}>
+                      {dermoscopyError.message}
+                    </Alert>
+
+                    {/* Dermoscopy Score */}
+                    <Box sx={{ bgcolor: '#fff3e0', borderRadius: 3, p: 2.5, mb: 2 }}>
+                      <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem', mb: 0.5 }}>Dermoscopy Score</Typography>
+                      <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.4rem', color: '#ff9800' }}>
+                        {(dermoscopyError.dermoscopy_score * 100).toFixed(1)}%
+                      </Typography>
+                      <Typography sx={{ ...s.font, color: '#999', fontSize: '0.75rem', mt: 1 }}>
+                        Score below 13% indicates non-dermoscopic image
+                      </Typography>
+                    </Box>
+
+                    {/* Signals Breakdown */}
+                    <Box sx={{ bgcolor: '#f5f5f5', borderRadius: 2, p: 2, mb: 2 }}>
+                      <Typography sx={{ ...s.font, fontWeight: 600, fontSize: '0.9rem', mb: 1, color: '#333' }}>
+                        Analysis Signals:
+                      </Typography>
+                      <Grid container spacing={1}>
+                        <Grid item xs={6}>
+                          <Box sx={{ bgcolor: 'white', borderRadius: 1, p: 1 }}>
+                            <Typography sx={{ ...s.font, fontSize: '0.7rem', color: '#999' }}>Border Uniformity</Typography>
+                            <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '0.95rem', color: '#1976d2' }}>
+                              {(dermoscopyError.signals.border_uniform_score * 100).toFixed(0)}%
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Box sx={{ bgcolor: 'white', borderRadius: 1, p: 1 }}>
+                            <Typography sx={{ ...s.font, fontSize: '0.7rem', color: '#999' }}>Clutter Score</Typography>
+                            <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '0.95rem', color: '#f44336' }}>
+                              {(dermoscopyError.signals.clutter_score * 100).toFixed(0)}%
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </Box>
+
+                    <Alert severity="info" sx={{ ...s.font, fontSize: '0.8rem' }}>
+                      Please upload a clear dermoscopic/dermatological image for accurate analysis
+                    </Alert>
+                  </Box>
+                ) : !result ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, color: '#999' }}>
                     <ImageIcon size={64} weight="duotone" />
                     <Typography sx={{ ...s.font, mt: 2 }}>Results will appear here</Typography>
@@ -238,11 +343,13 @@ export default function Analysis() {
                       </Typography>
                     </Box>
 
+
                     {/* Condition */}
                     <Box sx={{ bgcolor: '#f8f9fa', borderRadius: 3, p: 2.5, mb: 2 }}>
                       <Typography sx={{ ...s.font, color: '#666', fontSize: '0.8rem', mb: 0.5 }}>Detected Condition</Typography>
                       <Typography sx={{ ...s.font, fontWeight: 700, fontSize: '1.4rem', color: '#1a1a2e' }}>{result.lesion_name}</Typography>
                     </Box>
+
 
                     {/* Stats */}
                     <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -260,16 +367,19 @@ export default function Analysis() {
                       </Grid>
                     </Grid>
 
+
                     {/* Chips */}
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                       <Chip label={result.binary_prediction} color={isBenign ? 'success' : 'error'} size="small" sx={{ fontWeight: 600 }} />
                       <Chip label={result.filename} variant="outlined" size="small" />
                     </Box>
 
+
                     {/* Disclaimer */}
                     <Alert severity="info" sx={{ ...s.font, fontSize: '0.8rem', mb: 2 }}>
                       This is an AI prediction. Please consult a dermatologist for proper diagnosis.
                     </Alert>
+
 
                     {/* Generate Report Button */}
                     <Button
