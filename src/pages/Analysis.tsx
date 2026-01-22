@@ -34,7 +34,9 @@ export default function Analysis() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dermoscopyError, setDermoscopyError] = useState<DermoscopyError | null>(null);
+  const [limitExceeded, setLimitExceeded] = useState<{ resetsAt: string } | null>(null);
   const [showReport, setShowReport] = useState(false);
+  const [analyzed, setAnalyzed] = useState(false);
 
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,45 +60,11 @@ export default function Analysis() {
       setResult(null);
       setError(null);
       setDermoscopyError(null);
+      setLimitExceeded(null);
+      setAnalyzed(false);
       const reader = new FileReader();
       reader.onloadend = () => setImage(reader.result as string);
       reader.readAsDataURL(f);
-    }
-  };
-
-
-  // Save analysis result to database and get scan count
-  const saveAnalysisToDatabase = async (analysisResult: AnalysisResult, imageBase64: string): Promise<number | null> => {
-    try {
-      const response = await fetch(`${API_URL}/api/analysis/save`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: user?.id,
-          user_email: user?.primaryEmailAddress?.emailAddress,
-          filename: analysisResult.filename,
-          lesion_code: analysisResult.lesion_code,
-          lesion_name: analysisResult.lesion_name,
-          binary_prediction: analysisResult.binary_prediction,
-          confidence: analysisResult.confidence,
-          image_data: imageBase64,
-          analyzed_at: new Date().toISOString(),
-        }),
-      });
-      
-      if (!response.ok) {
-        console.error('Failed to save analysis to database');
-        return null;
-      }
-      
-      // Get the response with scan count
-      const data = await response.json();
-      return data.total_scans || null;
-    } catch (err) {
-      console.error('Error saving analysis to database:', err);
-      return null;
     }
   };
 
@@ -140,11 +108,24 @@ export default function Analysis() {
     setLoading(true);
     setError(null);
     setDermoscopyError(null);
+    setLimitExceeded(null);
     try {
       const form = new FormData();
       form.append('file', file);
+      form.append('user_id', user?.id || '');
       const res = await fetch(`${API_URL}/predict`, { method: 'POST', body: form });
-      
+
+      // Handle monthly limit exceeded (status 429)
+      if (res.status === 429) {
+        const data = await res.json();
+        if (data.code === 'MONTHLY_LIMIT_EXCEEDED') {
+          setLimitExceeded({ resetsAt: data.resets_at });
+          setResult(null);
+          setLoading(false);
+          return;
+        }
+      }
+
       // Handle non-dermoscopic image (status 400)
       if (res.status === 400) {
         const errorData = await res.json() as DermoscopyError;
@@ -153,11 +134,11 @@ export default function Analysis() {
         setLoading(false);
         return;
       }
-      
+
       if (!res.ok) {
         throw new Error(`Analysis failed: ${res.statusText}`);
       }
-      
+
       const data = await res.json();
       const analysisResult: AnalysisResult = {
         filename: data.filename || file.name,
@@ -168,10 +149,10 @@ export default function Analysis() {
       };
       setResult(analysisResult);
       setDermoscopyError(null);
-      
-      // Save analysis and report to database automatically
+      setAnalyzed(true);
+
+      // Save report to database (analysis is auto-saved by /predict endpoint)
       if (image) {
-        await saveAnalysisToDatabase(analysisResult, image);
         await saveReportToDatabase(analysisResult, image);
       }
     } catch (err) {
@@ -256,17 +237,22 @@ export default function Analysis() {
                   fullWidth
                   variant="contained"
                   size="large"
-                  disabled={!image || loading}
+                  disabled={!image || loading || analyzed}
                   onClick={analyze}
                   startIcon={<MagnifyingGlass size={20} weight="bold" />}
                   sx={{ mt: 2, py: 1.5, borderRadius: 2, textTransform: 'none', fontWeight: 700, ...s.font, bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
                 >
-                  {loading ? 'Analyzing...' : 'Analyze Image'}
+                  {loading ? 'Analyzing...' : analyzed ? 'Upload New Image' : 'Analyze Image'}
                 </Button>
 
 
                 {loading && <LinearProgress sx={{ mt: 2, borderRadius: 1 }} />}
                 {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+                {limitExceeded && (
+                  <Alert severity="warning" sx={{ mt: 2 }}>
+                    Monthly scan limit reached! Resets on {new Date(limitExceeded.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </Alert>
+                )}
               </Paper>
             </Grid>
 
