@@ -15,7 +15,7 @@ How can I assist you today?`,
 
     quickActions: [
         { label: 'How to analyze?', query: 'How do I analyze a skin image?' },
-        { label: 'Image guidelines', query: 'What type of images work best?' },
+        { label: 'Pricing Plans', query: 'Tell me about the subscription plans.' },
         { label: 'Privacy info', query: 'How is my data protected?' },
     ],
 
@@ -23,8 +23,15 @@ How can I assist you today?`,
         temperature: 0.5,
         topK: 20,
         topP: 0.8,
-        maxOutputTokens: 512,
+        maxOutputTokens: 1500,
     },
+
+    safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+    ],
 
     errorMessages: {
         connectionError: "I'm experiencing a temporary connection issue. Please try again in a moment. If you need immediate help, you can visit our Support page or email support@dermaai.com.",
@@ -46,8 +53,17 @@ export const DERMABOT_SYSTEM_PROMPT = `You are DermaBot, DermaAI's support assis
 ### About DermaAI
 - AI-powered skin analysis application
 - Uses DenseNet-121 model trained on HAM10000 dermoscopic dataset
-- 99% accuracy rate, detects 50+ skin conditions
+- High accuracy, specializing in 7 specific skin lesions
 - Helped 10,000+ users with 24/7 AI support
+
+### Detectable Conditions
+- **Melanoma**: Malignant potential
+- **NV**: Melanocytic Nevus (moles)
+- **BCC**: Basal Cell Carcinoma
+- **AKIEC**: Actinic Keratosis / Intraepithelial Carcinoma
+- **BKL**: Benign Keratosis
+- **DF**: Dermatofibroma
+- **VASC**: Vascular Lesions
 
 ### Key Features
 - AI Skin Analysis: Upload images for instant diagnosis
@@ -56,6 +72,17 @@ export const DERMABOT_SYSTEM_PROMPT = `You are DermaBot, DermaAI's support assis
 - Reports: Auto-saved analysis reports with history
 - PDF Export: Generate printable reports
 - Analytics: Track skin health over time
+
+### Pricing & Plans
+- **Free Plan**: 5 scans/month, Basic AI analysis, Email support
+- **Pro Plan**: 50 scans/month, Advanced AI, Priority processing, Detailed reports
+- **Express Plan**: Unlimited scans, Instant processing, API access, Dedicated support
+
+### Payment & Subscriptions
+- **Secure Payments**: Integrated with Stripe
+- **Upgrade**: Visit the Pricing page to upgrade anytime
+- **Cancel**: You can cancel your subscription directly from the Pricing page (if logged in)
+- **Billing**: Recurring monthly payments
 
 ### How to Use
 1. Go to Analysis page (requires login)
@@ -101,6 +128,7 @@ export const DERMABOT_SYSTEM_PROMPT = `You are DermaBot, DermaAI's support assis
 - Research: Scientific methodology
 - Articles: Skin health education
 - About: Company & team info
+- Price: View plans and manage subscription
 - Support: Help center
 - Dashboard: User control center (login required)
 - Analysis: Skin analysis (login required)

@@ -38,7 +38,7 @@ const stats = [
   { value: '10K+', label: 'Users Helped' },
   { value: '99%', label: 'Accuracy Rate' },
   { value: '24/7', label: 'AI Support' },
-  { value: '50+', label: 'Skin Conditions' },
+  { value: '7', label: 'Skin Conditions' },
 ];
 
 // Reusable Components
@@ -77,11 +77,11 @@ const StatItem = ({ value, label, index }: { value: string; label: string; index
 
 function About() {
   const navigate = useNavigate();
-  
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Navbar />
-      
+
       {/* Hero */}
       <Box sx={{ background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 50%, #1A237E 100%)', color: 'white', py: { xs: 8, sm: 10, md: 12 }, px: { xs: 2, sm: 0 }, overflow: 'hidden' }}>
         <Container maxWidth="lg">

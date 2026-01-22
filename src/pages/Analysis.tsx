@@ -2,6 +2,7 @@ import { UserButton, useUser } from '@clerk/clerk-react';
 import { Alert, AppBar, Box, Button, Chip, Container, Grid, IconButton, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
 import { CheckCircle, CloudArrowUp, FilePdf, Image as ImageIcon, MagnifyingGlass, List as MenuIcon, Warning } from 'phosphor-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AnalysisReport, { type AnalysisResult, generatePrintHTML } from '../components/AnalysisReport';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 
@@ -27,6 +28,7 @@ interface DermoscopyError {
 
 export default function Analysis() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -250,7 +252,10 @@ export default function Analysis() {
                 {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
                 {limitExceeded && (
                   <Alert severity="warning" sx={{ mt: 2 }}>
-                    Monthly scan limit reached! Resets on {new Date(limitExceeded.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    <Box>
+                      Monthly scan limit reached! Resets on {new Date(limitExceeded.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      <Button size="small" onClick={() => navigate('/price')} sx={{ ml: 1, fontWeight: 600 }}>Upgrade Plan</Button>
+                    </Box>
                   </Alert>
                 )}
               </Paper>

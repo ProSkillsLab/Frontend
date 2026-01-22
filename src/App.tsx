@@ -17,6 +17,7 @@ import ScientificResearch from './pages/ScientificResearch';
 import ArticlesPage from './pages/AriticlesPage';
 import SkinMoles from './pages/SkinMoles';
 import SkinCancer from './pages/SkinCancer';
+import Price from './pages/Price';
 import DermaBot from './components/DermaBot';
 
 
@@ -119,6 +120,7 @@ function AppRoutes() {
           }
         />
         <Route path="/about" element={<About />} />
+        <Route path="/price" element={<Price />} />
         <Route path="/support" element={<Support />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/termsofservice" element={<TermsOfService />} />
