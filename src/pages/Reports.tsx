@@ -4,6 +4,7 @@ import { List as MenuIcon, FileText, Eye, Trash, CheckCircle, Warning, Calendar,
 import { UserButton, useUser } from '@clerk/clerk-react';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 import AnalysisReport from '../components/AnalysisReport';
+import { EmailReportButton } from '../components/EmailReportButton';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
@@ -154,6 +155,9 @@ const ReportCard = ({ report, onView, onDelete, isDeleting }: { report: Report; 
               >
                 View
               </Button>
+
+              {/* Email button */}
+              <EmailReportButton reportId={report._id} />
               <IconButton 
                 size="small" 
                 onClick={onDelete} 
