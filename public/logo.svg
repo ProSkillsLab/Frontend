@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
-  <rect width="120" height="120" rx="16" fill="#1976d2" />
-  <g transform="translate(20,20)">
-    <circle cx="40" cy="24" r="20" fill="#fff" opacity="0.95" />
-    <path d="M18 60c5-6 18-10 36-10s31 4 36 10" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" fill="none"><rect width="120" height="120" fill="#1976d2" rx="16"/><g transform="translate(20 20)"><circle cx="40" cy="24" r="20" fill="#fff" opacity=".95"/><path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" d="M18 60c5-6 18-10 36-10s31 4 36 10" opacity=".95"/></g></svg>
