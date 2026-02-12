@@ -1,6 +1,3 @@
-// DermaBot Configuration & Prompts
-// All chatbot-related prompts and settings are managed here
-
 export const DERMABOT_CONFIG = {
     name: 'DermaBot',
     title: 'AI Support Assistant',
@@ -20,10 +17,10 @@ How can I assist you today?`,
     ],
 
     generationConfig: {
-        temperature: 0.5,
+        temperature: 0.3,
         topK: 20,
         topP: 0.8,
-        maxOutputTokens: 1500,
+        maxOutputTokens: 800,
     },
 
     safetySettings: [
@@ -39,7 +36,6 @@ How can I assist you today?`,
     },
 };
 
-// System prompt - concise but complete knowledge base
 export const DERMABOT_SYSTEM_PROMPT = `You are DermaBot, DermaAI's support assistant. Be concise and helpful.
 
 ## RULES:
@@ -141,5 +137,4 @@ export const DERMABOT_SYSTEM_PROMPT = `You are DermaBot, DermaAI's support assis
 - Add emojis sparingly 😊
 - Encourage skin health awareness`;
 
-// Model acknowledgment (kept short for speed)
 export const DERMABOT_ACK = "Got it! I'm DermaBot, ready to help with DermaAI questions.";

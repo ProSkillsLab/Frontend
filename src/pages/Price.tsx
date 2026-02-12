@@ -8,14 +8,14 @@ import Navbar from '../components/Navbar';
 import { loadStripe } from '@stripe/stripe-js';
 
 const s = { font: { fontFamily: '"DM Sans", sans-serif' } };
-const stripePromise = loadStripe('pk_live_51SnggB220TgVFE5TsGqHQ4vbmjx4vjtJBhcflRvcdOE0Leabl8a9aNPJ4nJlY2c0CrFM6Px5qqYfiYmQbDml5EsB00gUTT0AUC');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const plans = [
     {
         name: 'Free',
         price: '0',
         scans: '5',
-        period: '/month',
+        period: '/unlimited',
         icon: <Star size={32} weight="duotone" />,
         color: '#64B5F6',
         gradient: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)',
@@ -27,31 +27,31 @@ const plans = [
     },
     {
         name: 'Pro',
-        price: '0.01',
+        price: '25',
         scans: '50',
-        period: '/month',
+        period: '/unlimited',
         icon: <Lightning size={32} weight="duotone" />,
         color: '#7C4DFF',
         gradient: 'linear-gradient(135deg, #EDE7F6 0%, #D1C4E9 100%)',
-        features: ['50 skin scans per month', 'Advanced AI analysis', 'Priority processing', 'Detailed reports', 'Priority support'],
+        features: ['50 skin scans per month', 'Advanced AI analysis', 'Priority processing', 'Detailed reports', 'Priority support', 'Email report'],
         buttonText: 'Upgrade to Pro',
         buttonVariant: 'contained' as const,
         popular: true,
-        id: 'prod_Tq8nquB27Pkt9d',
+        id: import.meta.env.VITE_STRIPE_PRO_PRODUCT_ID,
     },
     {
         name: 'Express',
-        price: '0.00',
+        price: '50',
         scans: 'Unlimited',
-        period: '/month',
+        period: '/unlimited',
         icon: <Crown size={32} weight="duotone" />,
         color: '#FFB300',
         gradient: 'linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%)',
-        features: ['Unlimited skin scans', 'Premium AI analysis', 'Instant processing', 'Advanced reports', 'Dedicated support', 'API access'],
+        features: ['Unlimited skin scans', 'Premium AI analysis', 'Instant processing', 'Advanced reports', 'Dedicated support', 'Email report'],
         buttonText: 'Go Express',
         buttonVariant: 'contained' as const,
         popular: false,
-        id: 'prod_TqArqMo3d6iccb',
+        id: import.meta.env.VITE_STRIPE_EXPRESS_PRODUCT_ID,
     },
 ];
 
