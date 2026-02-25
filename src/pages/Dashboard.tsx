@@ -20,7 +20,7 @@ import {
   FileText,
   Clock,
 } from 'phosphor-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserButton, useUser } from '@clerk/clerk-react';
 import LeftNavbar, { drawerWidth } from '../components/LeftNavbar';
 
@@ -68,6 +68,10 @@ interface UserStats {
   scansThisWeek: number;
   pendingReviews: number;
   reportsGenerated: number;
+  scansThisMonth: number;
+  scansRemaining: number;
+  monthlyLimit: number;
+  resetsAt: string;
 }
 
 // Quick actions config
@@ -116,27 +120,53 @@ function Dashboard() {
     scansThisWeek: 0,
     pendingReviews: 0,
     reportsGenerated: 0,
+    scansThisMonth: 0,
+    scansRemaining: 5,
+    monthlyLimit: 5,
+    resetsAt: '',
   });
   const [loadingStats, setLoadingStats] = useState(true);
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Fetch user statistics from backend
+  // Fetch user statistics from backend (and verify payment if session_id is present)
   useEffect(() => {
-    const fetchUserStats = async () => {
+    const initDashboard = async () => {
       if (isLoaded && user) {
         try {
           setLoadingStats(true);
+
+          // Check for payment session_id
+          const searchParams = new URLSearchParams(location.search);
+          const sessionId = searchParams.get('session_id');
+
+          if (sessionId) {
+            try {
+              // Verify payment session to update plan immediately
+              await fetch(`${API_URL}/api/payment/verify-session?session_id=${sessionId}`);
+              // Clear the URL parameter locally without reload
+              window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (err) {
+              console.error("Payment verification failed", err);
+            }
+          }
+
+          // Now fetch fresh stats
           const url = `${API_URL}/api/analysis/stats/${user.id}`;
           const response = await fetch(url);
           const data = await response.json();
-          
+
           if (response.ok) {
             setStats({
               totalScans: data.total_scans ?? 0,
               scansThisWeek: data.scans_this_week ?? 0,
               pendingReviews: data.pending_reviews ?? 0,
               reportsGenerated: data.reports_generated ?? 0,
+              scansThisMonth: data.scans_this_month ?? 0,
+              scansRemaining: data.scans_remaining ?? 5,
+              monthlyLimit: data.monthly_limit ?? 5,
+              resetsAt: data.resets_at ?? '',
             });
           } else {
             console.error('Stats API error:', response.status, data);
@@ -148,8 +178,8 @@ function Dashboard() {
         }
       }
     };
-    fetchUserStats();
-  }, [isLoaded, user]);
+    initDashboard();
+  }, [isLoaded, user, location.key]);
 
   // Sync user profile to backend when user loads
   useEffect(() => {
@@ -178,7 +208,7 @@ function Dashboard() {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
       <LeftNavbar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
-      
+
       <AppBar position="fixed" elevation={0} sx={{ width: { sm: `calc(100% - ${drawerWidth}px)` }, ml: { sm: `${drawerWidth}px` }, background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <Toolbar>
           <IconButton color="inherit" edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 2, display: { sm: 'none' } }}>
@@ -216,36 +246,82 @@ function Dashboard() {
           <SectionTitle>Overview</SectionTitle>
           <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 4, sm: 5 } }}>
             <Grid item xs={6} md={3}>
-              <StatCard 
-                icon={<PeopleIcon size={28} weight="duotone" />} 
-                value={stats.totalScans} 
-                label="Total Scans" 
-                bgColor="#4FC3F7" 
-                index={0} 
-                loading={loadingStats} 
+              <StatCard
+                icon={<PeopleIcon size={28} weight="duotone" />}
+                value={stats.totalScans}
+                label="Total Scans"
+                bgColor="#4FC3F7"
+                index={0}
+                loading={loadingStats}
               />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard 
-                icon={<Clock size={28} weight="duotone" />} 
-                value={stats.scansThisWeek} 
-                label="This Week" 
-                bgColor="#1E88E5" 
-                index={1} 
-                loading={loadingStats} 
+              <StatCard
+                icon={<Clock size={28} weight="duotone" />}
+                value={stats.scansThisWeek}
+                label="This Week"
+                bgColor="#1E88E5"
+                index={1}
+                loading={loadingStats}
               />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard 
-                icon={<FileText size={28} weight="duotone" />} 
-                value={stats.reportsGenerated} 
-                label="Reports Generated" 
-                bgColor="#AB47BC" 
-                index={2} 
-                loading={loadingStats} 
+              <StatCard
+                icon={<FileText size={28} weight="duotone" />}
+                value={stats.reportsGenerated}
+                label="Reports Generated"
+                bgColor="#AB47BC"
+                index={2}
+                loading={loadingStats}
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <StatCard
+                icon={<Camera size={28} weight="duotone" />}
+                value={stats.monthlyLimit === -1 ? 'Unlimited' : `${stats.scansThisMonth}/${stats.monthlyLimit}`}
+                label="Monthly Scans"
+                bgColor={stats.monthlyLimit !== -1 && stats.scansRemaining === 0 ? '#EF5350' : '#66BB6A'}
+                index={3}
+                loading={loadingStats}
               />
             </Grid>
           </Grid>
+
+          {/* Scan Usage Bar */}
+          <Paper elevation={0} sx={{ ...s.card, p: { xs: 2, sm: 3 }, mb: { xs: 4, sm: 5 }, ...s.anim('fadeInUp', 0.15) }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+              <Typography sx={{ ...s.font, fontWeight: 600, color: '#1A237E' }}>Monthly Usage</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography sx={{ ...s.font, fontSize: '0.85rem', color: stats.monthlyLimit !== -1 && stats.scansRemaining === 0 ? '#EF5350' : 'text.secondary' }}>
+                  {stats.monthlyLimit === -1 ? 'Unlimited Access' : (stats.scansRemaining === 0 ? 'Limit Reached!' : `${stats.scansRemaining} remaining`)}
+                </Typography>
+                {stats.monthlyLimit !== -1 && stats.scansRemaining === 0 && (
+                  <Button size="small" variant="contained" onClick={() => navigate('/price')} sx={{ ...s.font, fontSize: '0.75rem', py: 0.5, px: 1.5, bgcolor: '#7C4DFF', '&:hover': { bgcolor: '#651FFF' } }}>
+                    Upgrade
+                  </Button>
+                )}
+              </Box>
+            </Box>
+            <Box sx={{ height: 10, bgcolor: '#E0E0E0', borderRadius: 5, overflow: 'hidden' }}>
+              <Box sx={{
+                height: '100%',
+                width: stats.monthlyLimit === -1 ? '100%' : `${(stats.scansThisMonth / stats.monthlyLimit) * 100}%`,
+                bgcolor: stats.monthlyLimit === -1 ? '#FFB300' : (stats.scansRemaining === 0 ? '#EF5350' : '#4CAF50'),
+                borderRadius: 5,
+                transition: 'width 0.5s ease'
+              }} />
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              {stats.resetsAt && (
+                <Typography sx={{ ...s.font, fontSize: '0.8rem', color: 'text.secondary' }}>
+                  Resets: {new Date(stats.resetsAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </Typography>
+              )}
+              <Button size="small" onClick={() => navigate('/price')} sx={{ ...s.font, fontSize: '0.8rem', textTransform: 'none' }}>
+                View Plans
+              </Button>
+            </Box>
+          </Paper>
 
           <SectionTitle delay={0.2}>Quick Actions</SectionTitle>
           <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 4, sm: 5 } }}>
