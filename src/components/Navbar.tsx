@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, Button, Box, Container, Menu, MenuItem, Typography, type SxProps, type Theme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
-import { SquaresFour, CaretDown, Compass, Flask, Circle, FirstAidKit, Article } from 'phosphor-react';
+import { SquaresFour, CaretDown, Compass, Flask, Circle, FirstAidKit, Article, CurrencyDollar } from 'phosphor-react';
 import type { Icon } from 'phosphor-react';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -135,7 +135,7 @@ const NavDropdown = ({ label, isOpen, anchorEl, onOpen, onClose, items, navigate
 
 function Navbar() {
   const navigate = useNavigate();
-  
+
   // Dropdown states
   const [gettingStartedAnchor, setGettingStartedAnchor] = useState<HTMLElement | null>(null);
   const [skinHealthAnchor, setSkinHealthAnchor] = useState<HTMLElement | null>(null);
@@ -170,7 +170,7 @@ function Navbar() {
               items={menuData.gettingStarted}
               navigate={navigate}
             />
-            
+
             <NavDropdown
               label="Skin Health"
               isOpen={Boolean(skinHealthAnchor)}
@@ -181,6 +181,7 @@ function Navbar() {
               navigate={navigate}
             />
 
+            <NavButton label="Pricing" icon={CurrencyDollar} onClick={() => navigate('/price')} />
             <NavButton label="Articles" icon={Article} onClick={() => navigate('/articles')} />
 
             <Button variant="contained" onClick={() => navigate('/sign-up')} sx={styles.ctaBtn}>
