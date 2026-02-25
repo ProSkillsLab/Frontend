@@ -21,7 +21,6 @@ AI-Powered Skin Analysis Application — a modern web app for analyzing skin con
 
 - Node.js (v18 or higher)
 - npm or yarn
-- Backend API server running ([Backend Repository](https://github.com/ThesisLab2025/dermaai-backend))
 
 
 ## 🛠️ Installation
@@ -135,5 +134,7 @@ This app uses [Clerk](https://clerk.com/) for authentication:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+
+## 📄 License
 
 
